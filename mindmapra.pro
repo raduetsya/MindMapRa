@@ -13,6 +13,12 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    mapcontext.cpp \
+    nodestorage.cpp \
+    mapnode.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    mapcontext.h \
+    nodestorage.h \
+    mapnode.h
