@@ -4,7 +4,7 @@
 #include <QString>
 #include <QPointF>
 
-namespace MinMapRa {
+namespace MindMapRa {
 
 class MapNode
 {

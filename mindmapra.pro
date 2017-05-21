@@ -16,9 +16,11 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     mapcontext.cpp \
     nodestorage.cpp \
-    mapnode.cpp
+    mapnode.cpp \
+    maplayout.cpp
 
 HEADERS  += mainwindow.h \
     mapcontext.h \
     nodestorage.h \
-    mapnode.h
+    mapnode.h \
+    maplayout.h

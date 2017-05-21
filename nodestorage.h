@@ -2,6 +2,9 @@
 #define NODESTORAGE_H
 
 #include <QObject>
+#include <QVector>
+#include <QSet>
+#include <QPair>
 
 namespace MindMapRa {
 
@@ -14,17 +17,24 @@ class NodeStorage : public QObject
 public:
     explicit NodeStorage(QObject *parent = 0);
 
-    void AddNode(MapNode* node);
-    void DeleteNode(MapNode* node);
-    void SetConnection(MapNode* node, bool isDoConnect);
+    QVectorIterator<MapNode*> IterNodes() const;
+    QVectorIterator<MapNode*> IterConnections(MapNode* nodeFrom) const;
+
 
 signals:
-    void OnNodeAdded(MapNode* ptr);
-    void OnNodeDeleted(MapNode* ptr);
+    void OnNodeAdded(MapNode* node);
+    void OnNodeDeleted(MapNode* node);
     void OnConnected(MapNode* from, MapNode* to);
     void OnDisconnected(MapNode* from, MapNode* to);
 
 public slots:
+    void AddNode(MapNode* node);
+    void DeleteNode(MapNode* node);
+    void SetConnection(MapNode* from, MapNode* to, bool isDoConnect);
+
+private:
+    QVector<MapNode*> m_nodes;
+    QSet< QPair<MapNode*, MapNode*> > m_conns;
 };
 
 }

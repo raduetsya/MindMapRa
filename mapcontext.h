@@ -6,6 +6,8 @@
 namespace MindMapRa {
 
 class MapNode;
+class MapContextImpl;
+class NodeStorage;
 
 class MapContext : public QObject
 {
@@ -22,7 +24,14 @@ public slots:
     void AddChildAtCursor();
     void MoveCursor(int hor, int ver);
     void DeleteNodeAtCursor();
+    void SelectNode(MapNode* node);
 
+private:
+    void InternalOnNodeAdded(MapNode* node);
+
+private:
+    NodeStorage* m_nodeStorage;
+    MapNode* m_curNode;
 };
 
 }
