@@ -7,7 +7,7 @@
 class ScrollAreaPan : public QScrollArea
 {
 public:
-    ScrollAreaPan(QWidget* parent);
+    ScrollAreaPan(QWidget* parent = NULL);
 
 signals:
 

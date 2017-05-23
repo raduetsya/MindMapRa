@@ -1,5 +1,7 @@
 #include "mainwindow.h"
-#include "scrollareapan.h"
+#include "mapcontextwidget.h"
+
+#include <QGridLayout>
 
 const QString APP_NAME = "MindMapRa";
 
@@ -8,18 +10,15 @@ MainWindow::MainWindow(QWidget *parent)
 {
     setWindowTitle(APP_NAME);
 
-    m_scrollArea = new ScrollAreaPan(this);
+    QWidget* centralWidget = new QWidget(this);
+    this->setCentralWidget( centralWidget );
+    QGridLayout* layout = new QGridLayout( centralWidget );
+    layout->setMargin(0);
 
-    m_backWidget = new QFrame(m_scrollArea);
-    m_backWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    m_backWidget->setBackgroundRole(QPalette::Dark);
-
-    m_scrollArea->setWidget(m_backWidget);
-
-    setCentralWidget(m_scrollArea);
+    m_mainWidget = new MapContextWidget(centralWidget);
+    layout->addWidget(m_mainWidget, 0, 0);
 }
 
 MainWindow::~MainWindow()
 {
-
 }

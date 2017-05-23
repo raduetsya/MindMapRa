@@ -5,6 +5,7 @@
 #include <QFrame>
 
 class ScrollAreaPan;
+class MapContextWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -15,8 +16,7 @@ public:
     ~MainWindow();
 
 private:
-    QFrame* m_backWidget;
-    ScrollAreaPan* m_scrollArea;
+    MapContextWidget* m_mainWidget;
 };
 
 #endif // MAINWINDOW_H

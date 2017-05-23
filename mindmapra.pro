@@ -18,11 +18,13 @@ SOURCES += main.cpp\
     nodestorage.cpp \
     mapnode.cpp \
     maplayout.cpp \
-    scrollareapan.cpp
+    scrollareapan.cpp \
+    mapcontextwidget.cpp
 
 HEADERS  += mainwindow.h \
     mapcontext.h \
     nodestorage.h \
     mapnode.h \
     maplayout.h \
-    scrollareapan.h
+    scrollareapan.h \
+    mapcontextwidget.h
