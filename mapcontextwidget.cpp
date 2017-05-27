@@ -1,33 +1,34 @@
 #include "mapcontextwidget.h"
 #include "scrollareapan.h"
+#include "mapnodewidget.h"
 
 #include <QLabel>
 #include <QGridLayout>
+#include <QGraphicsScene>
+#include <QGraphicsView>
 
 MapContextWidget::MapContextWidget(QWidget *parent)
     : QFrame(parent)
+    , m_nodeScene(new QGraphicsScene)
 {
-    // Scrollbars
-    m_scrollArea = new ScrollAreaPan;
-    m_scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-    m_scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    m_nodeView = new QGraphicsView(m_nodeScene);
+    m_nodeView->setDragMode(QGraphicsView::ScrollHandDrag);
+    m_nodeView->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
+    m_nodeView->setInteractive(true);
 
-    // Content window
-    m_contentFrame = new QFrame(m_scrollArea);
-    m_contentFrame->setBackgroundRole(QPalette::Dark);
-    m_scrollArea->setWidget(m_contentFrame);
-
-    // All windows to whole client area
+    // Layout: maximize to parent window
     QGridLayout* layout = new QGridLayout(this);
     layout->setMargin(0);
-    layout->addWidget(m_scrollArea);
+    layout->setAlignment(Qt::AlignCenter);
+    layout->addWidget(m_nodeView);
     setLayout(layout);
 
-    // Create test node
-    QLabel* newNode = new QLabel(m_contentFrame);
-    newNode->setText("Hello world! Hello world! Hello world! Hello world\nHello world! Hello world! Hello world! Hello world\nHello world! Hello world! Hello world! Hello world\n");
-    newNode->move(0, 0);
-    newNode->show();
-    m_contentFrame->adjustSize();
+    AddNode();
+}
+
+void MapContextWidget::AddNode()
+{
+    MapNodeWidget* newWidget = new MapNodeWidget(NULL);
+    m_nodeScene->addWidget(newWidget);
 }
 

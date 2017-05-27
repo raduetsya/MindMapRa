@@ -2,9 +2,16 @@
 #define MAPCONTEXTWIDGET_H
 
 #include <QObject>
+#include <QSet>
 #include <QFrame>
 
+QT_BEGIN_NAMESPACE
+class QGraphicsScene;
+class QGraphicsView;
+QT_END_NAMESPACE
+
 class ScrollAreaPan;
+class MapNodeWidget;
 
 class MapContextWidget : public QFrame
 {
@@ -16,8 +23,12 @@ signals:
 public slots:
 
 private:
-    QFrame* m_contentFrame;
+    void AddNode();
+
+    QGraphicsScene* m_nodeScene;
+    QGraphicsView* m_nodeView;
     ScrollAreaPan* m_scrollArea;
+    QSet<MapNodeWidget*> m_nodeWidgets;
 };
 
 #endif // MAPCONTEXTWIDGET_H
