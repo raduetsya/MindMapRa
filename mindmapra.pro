@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     mapnode.cpp \
     maplayout.cpp \
     scrollareapan.cpp \
-    mapcontextwidget.cpp
+    mapcontextwidget.cpp \
+    mapnodewidget.cpp
 
 HEADERS  += mainwindow.h \
     mapcontext.h \
@@ -27,4 +28,5 @@ HEADERS  += mainwindow.h \
     mapnode.h \
     maplayout.h \
     scrollareapan.h \
-    mapcontextwidget.h
+    mapcontextwidget.h \
+    mapnodewidget.h
