@@ -8,6 +8,11 @@ NodeStorage::NodeStorage(QObject *parent)
 
 }
 
+QMap<MapNode*, QVector<MapNode*> > NodeStorage::AllNodes()
+{
+    return m_conns;
+}
+
 
 void NodeStorage::AddNode(MapNode *node) {
     if (m_nodes.contains(node))
@@ -28,15 +33,14 @@ void NodeStorage::SetConnection(MapNode *from, MapNode *to, bool isDoConnect) {
     if (!m_nodes.contains(from) || !m_nodes.contains(to))
         return;
 
-    const QPair<MapNode*, MapNode*> pair = QPair<MapNode*, MapNode*>(from, to);
-    const bool found = m_conns.contains( pair );
+    const bool found = m_conns.contains( from );
 
     if (!found && isDoConnect) {
-        m_conns.insert(pair);
+        m_conns[from].push_back(to);
         emit OnConnected(from, to);
     }
     else if (found && isDoConnect) {
-        m_conns.remove(pair);
+        m_conns[from].removeAll(to);
         emit OnDisconnected(from, to);
     }
 }

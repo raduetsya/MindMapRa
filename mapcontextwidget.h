@@ -13,10 +13,14 @@ QT_END_NAMESPACE
 class ScrollAreaPan;
 class MapNodeWidget;
 
+namespace MindMapRa {
+    class MapContext;
+}
+
 class MapContextWidget : public QFrame
 {
 public:
-    MapContextWidget(QWidget* parent);
+    MapContextWidget(QWidget* parent, MindMapRa::MapContext* model = NULL);
 
 signals:
 
@@ -29,6 +33,7 @@ private:
     QGraphicsView* m_nodeView;
     ScrollAreaPan* m_scrollArea;
     QSet<MapNodeWidget*> m_nodeWidgets;
+    MindMapRa::MapContext* m_model;
 };
 
 #endif // MAPCONTEXTWIDGET_H

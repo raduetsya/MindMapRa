@@ -3,8 +3,7 @@
 
 #include <QObject>
 #include <QVector>
-#include <QSet>
-#include <QPair>
+#include <QMap>
 
 namespace MindMapRa {
 
@@ -17,9 +16,7 @@ class NodeStorage : public QObject
 public:
     explicit NodeStorage(QObject *parent = 0);
 
-    QVectorIterator<MapNode*> IterNodes() const;
-    QVectorIterator<MapNode*> IterConnections(MapNode* nodeFrom) const;
-
+    QMap<MapNode*, QVector<MapNode*> > AllNodes();
 
 signals:
     void OnNodeAdded(MapNode* node);
@@ -34,7 +31,7 @@ public slots:
 
 private:
     QVector<MapNode*> m_nodes;
-    QSet< QPair<MapNode*, MapNode*> > m_conns;
+    QMap<MapNode*, QVector<MapNode*> > m_conns;
 };
 
 }

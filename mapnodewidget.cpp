@@ -11,11 +11,16 @@ MapNodeWidget::MapNodeWidget(QWidget* parent)
 
     QGridLayout* layout = new QGridLayout(this);
 
-    QLabel* label = new QLabel;
-    label->setText("Hello world!");
-    layout->addWidget(label);
+    m_label = new QLabel;
+    m_label->setText("Hello world!");
+    layout->addWidget(m_label);
 
     this->setFrameShape(QFrame::StyledPanel);
     this->setFrameShadow(QFrame::Raised);
+}
+
+void MapNodeWidget::SetText(const QString &text)
+{
+    m_label->setText(text);
 }
 

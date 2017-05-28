@@ -2,6 +2,8 @@
 #include "nodestorage.h"
 #include "mapnode.h"
 
+#include <QMap>
+
 namespace MindMapRa {
 
 MapContext::MapContext(QObject *parent)
@@ -13,6 +15,12 @@ MapContext::MapContext(QObject *parent)
     m_nodeStorage->AddNode(m_curNode);
 
     // connect(nodeStorage, layout, added)
+}
+
+QMap<MapNode*, QVector<MapNode*> > MapContext::AllNodes()
+{
+    QMap<MapNode*, QVector<MapNode*> > resAll = m_nodeStorage->AllNodes();
+    return resAll;
 }
 
 void MapContext::AddChildAtCursor() {

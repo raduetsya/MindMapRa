@@ -9,11 +9,17 @@ class MapNode;
 class MapContextImpl;
 class NodeStorage;
 
+/*
+ * Facade for all node storage/interaction
+ * Works with visible nodes
+ */
 class MapContext : public QObject
 {
     Q_OBJECT
 public:
     explicit MapContext(QObject *parent = 0);
+
+    QMap<MapNode*, QVector<MapNode*> > AllNodes();
 
 signals:
     void OnNodeAdded(MapNode* node);
