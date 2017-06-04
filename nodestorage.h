@@ -16,22 +16,18 @@ class NodeStorage : public QObject
 public:
     explicit NodeStorage(QObject *parent = 0);
 
-    QMap<MapNode*, QVector<MapNode*> > AllNodes();
+    const QMap<MapNode*, MapNode*>& AllNodes() const;
 
 signals:
-    void OnNodeAdded(MapNode* node);
+    void OnNodeAdded(MapNode* node, MapNode* parent);
     void OnNodeDeleted(MapNode* node);
-    void OnConnected(MapNode* from, MapNode* to);
-    void OnDisconnected(MapNode* from, MapNode* to);
 
 public slots:
-    void AddNode(MapNode* node);
+    void AddNode(MapNode* node, MapNode* parent);
     void DeleteNode(MapNode* node);
-    void SetConnection(MapNode* from, MapNode* to, bool isDoConnect);
 
 private:
-    QVector<MapNode*> m_nodes;
-    QMap<MapNode*, QVector<MapNode*> > m_conns;
+    QMap<MapNode*, MapNode*> m_nodes;
 };
 
 }

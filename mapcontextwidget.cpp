@@ -27,26 +27,57 @@ MapContextWidget::MapContextWidget(QWidget *parent, MindMapRa::MapContext* model
     setLayout(layout);
 
     if (m_model == NULL)
-    {
         m_model = new MindMapRa::MapContext;
-        m_model->AddChildAtCursor();
+
+    m_model->AddEventListener(this);
+    m_model->PresentEntireMapAsEvents(this);
+}
+
+void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapNode* parent)
+{
+    // create node
+    {
+        MapNodeWidget* newWidget = new MapNodeWidget(NULL);
+        newWidget->SetText( node->GetText() );
+        newWidget->move( node->GetPos().toPoint() );
+        m_nodeScene->addWidget(newWidget);
+        m_nodeWidgets[node] = newWidget;
     }
 
-    // fill nodes
+    // connect to parent
+    if (parent)
     {
-        QMap<MindMapRa::MapNode*, QVector<MindMapRa::MapNode*> > nodesMap = m_model->AllNodes();
-        QMapIterator<MindMapRa::MapNode*, QVector<MindMapRa::MapNode*> > it(nodesMap);
-        while(it.hasNext())
-        {
-            it.next();
-            MapNodeWidget* newWidget = new MapNodeWidget(NULL);
-            newWidget->SetText("123");
-            m_nodeScene->addWidget(newWidget);
-        }
+        const float curvePointsOffset = 20.f;
+
+        const QPointF from_1 = parent->GetPos() + QPointF(parent->GetWidth(), 0.f);
+        const QPointF from_2 = from_1 + QPointF(curvePointsOffset, 0.f);
+
+        const QPointF to_1 = node->GetPos();
+        const QPointF to_2 = to_1 - QPointF(curvePointsOffset, 0.f);
+
+        QPainterPath path;
+        path.moveTo(from_1);
+        path.cubicTo(from_2, to_2, to_1);
+        m_nodeScene->addPath(path);
     }
 }
 
-void MapContextWidget::AddNode()
+void MapContextWidget::OnNodeDeleted(MindMapRa::MapNode *node)
 {
+    if (m_nodeWidgets.count(node) > 0)
+    {
+        delete m_nodeWidgets[node];
+        m_nodeWidgets.remove(node);
+    }
+}
+
+void MapContextWidget::OnNodeFocus(MindMapRa::MapNode *node, bool isSetFocus)
+{
+    // todo: impl
+}
+
+void MapContextWidget::OnNodePosition(MindMapRa::MapNode *node, QPointF oldPos, QPointF newPos)
+{
+    m_nodeWidgets[node]->move( newPos.toPoint() );
 }
 

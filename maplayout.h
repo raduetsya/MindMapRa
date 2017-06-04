@@ -17,17 +17,15 @@ class MapLayout : public QObject
 public:
     explicit MapLayout(QObject *parent = 0);
 
+    void FixAllPositions();
 public slots:
-    void OnNodeAdded(MapNode* node);
+    void OnNodeAdded(MapNode* node, MapNode* parent);
     void OnNodeDeleted(MapNode* node);
-    void OnConnected(MapNode* from, MapNode* to);
-    void OnDisconnected(MapNode* from, MapNode* to);
 
 signals:
     void OnNodePosition(MapNode* node, QPointF oldPos, QPointF newPos);
 
 private:
-    void FixAllPositions();
     int UpdateAndGetNodeSize(MapNode* node, int topPos, int parentLeftPos);
 
     struct Block {
@@ -39,7 +37,6 @@ private:
 
     QMap<MapNode*, Block> m_blocks;
     QMap<MapNode*, QPointF> m_prevBlocks;
-    Block m_orphans;
 };
 
 }

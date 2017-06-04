@@ -2,12 +2,25 @@
 #define MAPCONTEXT_H
 
 #include <QObject>
+#include <QVector>
+#include <QPointF>
 
 namespace MindMapRa {
 
 class MapNode;
 class MapContextImpl;
 class NodeStorage;
+class MapLayout;
+
+class IMapContextClientEventListener {
+public:
+    virtual ~IMapContextClientEventListener() {};
+
+    virtual void OnNodeAdded(MapNode* node, MapNode* parent) = 0;
+    virtual void OnNodeDeleted(MapNode* node) = 0;
+    virtual void OnNodeFocus(MapNode* node, bool isSetFocus) = 0;
+    virtual void OnNodePosition(MapNode *node, QPointF oldPos, QPointF newPos) = 0;
+};
 
 /*
  * Facade for all node storage/interaction
@@ -19,25 +32,26 @@ class MapContext : public QObject
 public:
     explicit MapContext(QObject *parent = 0);
 
-    QMap<MapNode*, QVector<MapNode*> > AllNodes();
-
-signals:
-    void OnNodeAdded(MapNode* node);
-    void OnNodeDeleted(MapNode* node);
-    void OnNodeFocus(MapNode* node, bool isSetFocus);
+    void AddEventListener(IMapContextClientEventListener* listener);
+    void PresentEntireMapAsEvents(IMapContextClientEventListener* listener);
+    void RemoveEventListener(IMapContextClientEventListener* listener);
 
 public slots:
-    void AddChildAtCursor();
+    MapNode* AddChildAtCursor();
     void MoveCursor(int hor, int ver);
     void DeleteNodeAtCursor();
     void SelectNode(MapNode* node);
+    void ChangeTextAtCursor(const QString& text);
+
+private slots:
+    void InternalOnNodePosition(MapNode* node, QPointF oldPos, QPointF newPos);
 
 private:
-    void InternalOnNodeAdded(MapNode* node);
-
-private:
+    MapLayout* m_layout;
     NodeStorage* m_nodeStorage;
     MapNode* m_curNode;
+
+    QVector<IMapContextClientEventListener*> m_eventListeners;
 };
 
 }
