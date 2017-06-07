@@ -47,8 +47,8 @@ private slots:
     void InternalOnNodePosition(MapNode* node, QPointF oldPos, QPointF newPos);
 
 private:
-    MapLayout* m_layout;
     NodeStorage* m_nodeStorage;
+    MapLayout* m_layout;
     MapNode* m_curNode;
 
     QVector<IMapContextClientEventListener*> m_eventListeners;

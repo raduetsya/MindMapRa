@@ -17,6 +17,8 @@ MapNodeWidget::MapNodeWidget(QWidget* parent)
 
     this->setFrameShape(QFrame::StyledPanel);
     this->setFrameShadow(QFrame::Raised);
+
+    SetFocusNode(false);
 }
 
 void MapNodeWidget::SetText(const QString &text)
@@ -24,3 +26,20 @@ void MapNodeWidget::SetText(const QString &text)
     m_label->setText(text);
 }
 
+void MapNodeWidget::SetFocusNode(bool isFocus)
+{
+    if (isFocus)
+        setBackgroundRole(QPalette::Light);
+    else
+        setBackgroundRole(QPalette::Dark);
+}
+
+void MapNodeWidget::EnableTextEdit(bool isEnable)
+{
+    // m_label->
+}
+
+void MapNodeWidget::mousePressEvent(QMouseEvent *ev)
+{
+    emit OnChangeFocusUserRequest(this);
+}

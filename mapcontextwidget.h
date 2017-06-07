@@ -22,10 +22,9 @@ namespace MindMapRa {
 
 class MapContextWidget : public QFrame, public MindMapRa::IMapContextClientEventListener
 {
+    Q_OBJECT
 public:
-    MapContextWidget(QWidget* parent, MindMapRa::MapContext* model = NULL);
-
-    void mousePressEvent(QMouseEvent * event);
+    explicit MapContextWidget(QWidget* parent = NULL, MindMapRa::MapContext* model = NULL);
 
     // IMapContextClientEventListener impl
     void OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapNode* parent);
@@ -33,9 +32,12 @@ public:
     void OnNodeFocus(MindMapRa::MapNode* node, bool isSetFocus);
     void OnNodePosition(MindMapRa::MapNode* node, QPointF oldPos, QPointF newPos);
 
+    void keyPressEvent(QKeyEvent* ev);
+
 signals:
 
 public slots:
+    void OnChangeFocusUserRequest(MapNodeWidget* widget);
 
 private:
     QGraphicsScene* m_nodeScene;

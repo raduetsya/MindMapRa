@@ -40,6 +40,10 @@ void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapNode*
         MapNodeWidget* newWidget = new MapNodeWidget(NULL);
         newWidget->SetText( node->GetText() );
         newWidget->move( node->GetPos().toPoint() );
+
+        connect(newWidget,  SIGNAL(OnChangeFocusUserRequest(MapNodeWidget*)),
+                this,       SLOT(OnChangeFocusUserRequest(MapNodeWidget*)));
+
         m_nodeScene->addWidget(newWidget);
         m_nodeWidgets[node] = newWidget;
     }
@@ -73,11 +77,33 @@ void MapContextWidget::OnNodeDeleted(MindMapRa::MapNode *node)
 
 void MapContextWidget::OnNodeFocus(MindMapRa::MapNode *node, bool isSetFocus)
 {
-    // todo: impl
+    m_nodeWidgets[node]->SetFocusNode(isSetFocus);
 }
 
 void MapContextWidget::OnNodePosition(MindMapRa::MapNode *node, QPointF oldPos, QPointF newPos)
 {
     m_nodeWidgets[node]->move( newPos.toPoint() );
+}
+
+void MapContextWidget::keyPressEvent(QKeyEvent *ev)
+{
+    if (ev->key() == Qt::Key_F2)
+        m_model->AddChildAtCursor();
+    if (ev->key() == Qt::Key_Space)
+        m_nodeWidgets[ m_model->GetCurrenNode() ]->EnableTextEdit();
+}
+
+void MapContextWidget::OnChangeFocusUserRequest(MapNodeWidget *widget)
+{
+    QMapIterator<MindMapRa::MapNode*, MapNodeWidget*> it(m_nodeWidgets);
+    while(it.hasNext())
+    {
+        it.next();
+        if (it.value() == widget)
+        {
+            m_model->SelectNode(it.key());
+            break;
+        }
+    }
 }
 

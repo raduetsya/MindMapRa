@@ -6,17 +6,22 @@
 
 QT_BEGIN_NAMESPACE
 class QLabel;
+class QMouseEvent;
 QT_END_NAMESPACE
 
 class MapNodeWidget : public QFrame
 {
+    Q_OBJECT
 public:
-    MapNodeWidget(QWidget* parent = NULL);
+    explicit MapNodeWidget(QWidget* parent = NULL);
     void SetText(const QString& text);
+    void SetFocusNode(bool isFocus);
+    void EnableTextEdit(bool isEnable);
+
+    void mousePressEvent(QMouseEvent* ev) Q_DECL_OVERRIDE;
 
 signals:
-
-public slots:
+    void OnChangeFocusUserRequest(MapNodeWidget*);
 
 private:
     QLabel* m_label;
