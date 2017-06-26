@@ -105,5 +105,10 @@ void MapContext::RemoveEventListener(IMapContextClientEventListener* listener) {
         m_eventListeners.erase(m_eventListeners.begin() + index);
 }
 
+MapNode *MapContext::GetCurrenNode()
+{
+    return m_curNode;
+}
+
 }
 

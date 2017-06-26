@@ -1,29 +1,38 @@
 #include "mapnodewidget.h"
 
-#include <QLabel>
+#include <QTextEdit>
 #include <QGridLayout>
+#include <QPlainTextEdit>
 
 MapNodeWidget::MapNodeWidget(QWidget* parent)
     : QFrame(parent)
 {
     this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    this->setSizeIncrement(200, 100);
+    this->setSizeIncrement(200, 50);
 
     QGridLayout* layout = new QGridLayout(this);
 
-    m_label = new QLabel;
-    m_label->setText("Hello world!");
+    m_label = new QPlainTextEdit(this);
+    m_label->setPlaceholderText("Press SPACE to edit");
+    m_label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    m_label->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_label->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    m_label->setReadOnly(true);
     layout->addWidget(m_label);
+
+    connect(m_label, SIGNAL(textChanged()),
+            this, SLOT(OnTextChanged()));
 
     this->setFrameShape(QFrame::StyledPanel);
     this->setFrameShadow(QFrame::Raised);
 
     SetFocusNode(false);
+    OnTextChanged();
 }
 
 void MapNodeWidget::SetText(const QString &text)
 {
-    m_label->setText(text);
+    // m_label->setText(text);
 }
 
 void MapNodeWidget::SetFocusNode(bool isFocus)
@@ -36,10 +45,33 @@ void MapNodeWidget::SetFocusNode(bool isFocus)
 
 void MapNodeWidget::EnableTextEdit(bool isEnable)
 {
-    // m_label->
+    m_label->setReadOnly(!isEnable);
+    m_label->setFocus();
 }
 
 void MapNodeWidget::mousePressEvent(QMouseEvent *ev)
 {
     emit OnChangeFocusUserRequest(this);
+}
+
+void MapNodeWidget::OnTextChanged()
+{
+    const QFontMetrics fm(m_label->font());
+    const QSize addSize(40, 40);
+    const QSize maxSize(300, 60);
+
+    const QString dataText = m_label->document()->toPlainText();
+    const QString placeholderText = m_label->placeholderText();
+    const QString text = ((dataText.size() == 0) ? placeholderText : dataText);
+    const QRect textRect = fm.boundingRect(
+                QRect(QPoint(0,0), maxSize),
+                Qt::TextWordWrap | Qt::TextWrapAnywhere,
+                text);
+
+    const QSize textSizeAdd(
+                textRect.width() + addSize.width(),
+                textRect.height() + addSize.height() );
+
+    resize( qMin(maxSize.width(), textSizeAdd.width()),
+            qMin(maxSize.height(), textSizeAdd.height()));
 }

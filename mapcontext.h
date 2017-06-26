@@ -37,6 +37,7 @@ public:
     void RemoveEventListener(IMapContextClientEventListener* listener);
 
 public slots:
+    MapNode* GetCurrenNode();
     MapNode* AddChildAtCursor();
     void MoveCursor(int hor, int ver);
     void DeleteNodeAtCursor();

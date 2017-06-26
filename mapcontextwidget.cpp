@@ -88,9 +88,12 @@ void MapContextWidget::OnNodePosition(MindMapRa::MapNode *node, QPointF oldPos, 
 void MapContextWidget::keyPressEvent(QKeyEvent *ev)
 {
     if (ev->key() == Qt::Key_F2)
-        m_model->AddChildAtCursor();
-    if (ev->key() == Qt::Key_Space)
-        m_nodeWidgets[ m_model->GetCurrenNode() ]->EnableTextEdit();
+    {
+        MindMapRa::MapNode* newNode = m_model->AddChildAtCursor();
+        m_nodeWidgets[ m_model->GetCurrenNode() ]->EnableTextEdit(true);
+    }
+    if (ev->key() == Qt::Key_F3)
+        m_nodeWidgets[ m_model->GetCurrenNode() ]->EnableTextEdit(true);
 }
 
 void MapContextWidget::OnChangeFocusUserRequest(MapNodeWidget *widget)

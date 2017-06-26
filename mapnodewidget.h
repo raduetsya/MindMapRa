@@ -5,7 +5,7 @@
 #include <QFrame>
 
 QT_BEGIN_NAMESPACE
-class QLabel;
+class QPlainTextEdit;
 class QMouseEvent;
 QT_END_NAMESPACE
 
@@ -23,8 +23,11 @@ public:
 signals:
     void OnChangeFocusUserRequest(MapNodeWidget*);
 
+private slots:
+    void OnTextChanged();
+
 private:
-    QLabel* m_label;
+    QPlainTextEdit* m_label;
 };
 
 #endif // MAPNODEWIDGET_H
