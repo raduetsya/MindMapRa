@@ -8,6 +8,8 @@
 #include <QGridLayout>
 #include <QGraphicsScene>
 #include <QGraphicsView>
+#include <QGraphicsPathItem>
+#include <QDebug>
 
 MapContextWidget::MapContextWidget(QWidget *parent, MindMapRa::MapContext* model)
     : QFrame(parent)
@@ -51,18 +53,7 @@ void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapNode*
     // connect to parent
     if (parent)
     {
-        const float curvePointsOffset = 20.f;
-
-        const QPointF from_1 = parent->GetPos() + QPointF(parent->GetWidth(), 0.f);
-        const QPointF from_2 = from_1 + QPointF(curvePointsOffset, 0.f);
-
-        const QPointF to_1 = node->GetPos();
-        const QPointF to_2 = to_1 - QPointF(curvePointsOffset, 0.f);
-
-        QPainterPath path;
-        path.moveTo(from_1);
-        path.cubicTo(from_2, to_2, to_1);
-        m_nodeScene->addPath(path);
+        m_pathWidgets.insert(m_nodeWidgets[node], m_nodeScene->addPath(GenPath(parent, node)));
     }
 }
 
@@ -83,6 +74,10 @@ void MapContextWidget::OnNodeFocus(MindMapRa::MapNode *node, bool isSetFocus)
 void MapContextWidget::OnNodePosition(MindMapRa::MapNode *node, QPointF oldPos, QPointF newPos)
 {
     m_nodeWidgets[node]->move( newPos.toPoint() );
+    MindMapRa::MapNode* parent = m_model->GetNodeParent(node);
+    QGraphicsPathItem* path = (m_nodeWidgets.contains(node) ? m_pathWidgets[ m_nodeWidgets[node] ] : NULL);
+    if (parent && path)
+        path->setPath(GenPath(parent, node));
 }
 
 void MapContextWidget::keyPressEvent(QKeyEvent *ev)
@@ -110,3 +105,20 @@ void MapContextWidget::OnChangeFocusUserRequest(MapNodeWidget *widget)
     }
 }
 
+QPainterPath MapContextWidget::GenPath(MindMapRa::MapNode* parent, MindMapRa::MapNode* child)
+{
+    const float curvePointsOffset = 5.f;
+
+    const QPointF from_1 = parent->GetPos() + QPointF(parent->GetWidth(), 0.f);
+    const QPointF from_2 = from_1 + QPointF(curvePointsOffset, 0.f);
+
+    const QPointF to_1 = child->GetPos();
+    const QPointF to_2 = to_1 - QPointF(curvePointsOffset, 0.f);
+
+    qDebug() << from_1 << from_2 << to_1 << to_2;
+
+    QPainterPath path;
+    path.moveTo(from_1);
+    path.cubicTo(from_2, to_2, to_1);
+    return path;
+}

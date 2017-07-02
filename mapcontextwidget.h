@@ -9,6 +9,7 @@
 QT_BEGIN_NAMESPACE
 class QGraphicsScene;
 class QGraphicsView;
+class QGraphicsPathItem;
 QT_END_NAMESPACE
 
 class ScrollAreaPan;
@@ -40,13 +41,15 @@ public slots:
     void OnChangeFocusUserRequest(MapNodeWidget* widget);
 
 private:
+    QPainterPath GenPath(MindMapRa::MapNode* parent, MindMapRa::MapNode* child);
+
     QGraphicsScene* m_nodeScene;
     QGraphicsView* m_nodeView;
     ScrollAreaPan* m_scrollArea;
 
     QMap<MindMapRa::MapNode*, MapNodeWidget*> m_nodeWidgets;
-    // QMap<MindMapRa::MapNode*, > m_pathWidgets;
     MindMapRa::MapContext* m_model;
+    QMap<MapNodeWidget*, QGraphicsPathItem*> m_pathWidgets;
 };
 
 #endif // MAPCONTEXTWIDGET_H

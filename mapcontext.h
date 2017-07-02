@@ -43,6 +43,7 @@ public slots:
     void DeleteNodeAtCursor();
     void SelectNode(MapNode* node);
     void ChangeTextAtCursor(const QString& text);
+    MapNode* GetNodeParent(MapNode* node);
 
 private slots:
     void InternalOnNodePosition(MapNode* node, QPointF oldPos, QPointF newPos);

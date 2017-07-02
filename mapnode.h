@@ -17,6 +17,9 @@ public:
     QString GetText() const { return m_text; }
     QPointF GetPos() const { return m_pos; }
     float GetWidth() const { return 100.0f; }
+    // float GetHeight() const { return 20.0f; }
+
+    void SetPos(QPointF pos) { m_pos = pos; }
 
 private:
     QString m_text;

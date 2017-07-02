@@ -76,10 +76,16 @@ void MapContext::ChangeTextAtCursor(const QString &text)
     // todo: impl
 }
 
+MapNode *MapContext::GetNodeParent(MapNode *node)
+{
+    return m_nodeStorage->AllNodes().value(node, NULL);
+}
+
 void MapContext::InternalOnNodePosition(MapNode *node, QPointF oldPos, QPointF newPos)
 {
     Q_FOREACH(IMapContextClientEventListener* evListener, m_eventListeners)
     {
+        node->SetPos(newPos);
         evListener->OnNodePosition(node, oldPos, newPos);
     }
 }
