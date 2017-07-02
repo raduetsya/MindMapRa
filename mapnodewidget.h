@@ -9,11 +9,17 @@ class QPlainTextEdit;
 class QMouseEvent;
 QT_END_NAMESPACE
 
-class MapNodeWidget : public QFrame
+#include "maplayout.h"
+
+class MapNodeWidget : public QFrame, public ILayoutElement
 {
     Q_OBJECT
 public:
     explicit MapNodeWidget(QWidget* parent = NULL);
+
+    // ILayoutElement impl
+    QSizeF ElementSize() Q_DECL_OVERRIDE;
+
     void SetText(const QString& text);
     void SetFocusNode(bool isFocus);
     void EnableTextEdit(bool isEnable);
@@ -28,6 +34,7 @@ private slots:
 
 private:
     QPlainTextEdit* m_label;
+    QSize m_size;
 };
 
 #endif // MAPNODEWIDGET_H

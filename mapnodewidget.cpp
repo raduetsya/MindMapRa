@@ -8,7 +8,7 @@ MapNodeWidget::MapNodeWidget(QWidget* parent)
     : QFrame(parent)
 {
     this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    this->setSizeIncrement(200, 50);
+    this->setSizeIncrement(10, 10);
 
     QGridLayout* layout = new QGridLayout(this);
 
@@ -30,8 +30,14 @@ MapNodeWidget::MapNodeWidget(QWidget* parent)
     OnTextChanged();
 }
 
+QSizeF MapNodeWidget::ElementSize()
+{
+    return QSizeF(m_size);
+}
+
 void MapNodeWidget::SetText(const QString &text)
 {
+    Q_UNUSED(text);
     // m_label->setText(text);
 }
 
@@ -51,6 +57,7 @@ void MapNodeWidget::EnableTextEdit(bool isEnable)
 
 void MapNodeWidget::mousePressEvent(QMouseEvent *ev)
 {
+    Q_UNUSED(ev);
     emit OnChangeFocusUserRequest(this);
 }
 
@@ -72,6 +79,8 @@ void MapNodeWidget::OnTextChanged()
                 textRect.width() + addSize.width(),
                 textRect.height() + addSize.height() );
 
-    resize( qMin(maxSize.width(), textSizeAdd.width()),
-            qMin(maxSize.height(), textSizeAdd.height()));
+    m_size = QSize( qMin(maxSize.width(), textSizeAdd.width()),
+                    qMin(maxSize.height(), textSizeAdd.height()));
+
+    resize(m_size);
 }

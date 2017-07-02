@@ -7,38 +7,43 @@
 #include <QPointF>
 #include <QRectF>
 
-namespace MindMapRa {
+class ILayoutElement
+{
+public:
+    virtual QSizeF ElementSize() = 0;
 
-class MapNode;
+    virtual ~ILayoutElement() {};
+};
 
 class MapLayout : public QObject
 {
     Q_OBJECT
 public:
+
     explicit MapLayout(QObject *parent = 0);
 
     void FixAllPositions();
-public slots:
-    void OnNodeAdded(MapNode* node, MapNode* parent);
-    void OnNodeDeleted(MapNode* node);
+
+    void Add(ILayoutElement* node, ILayoutElement* parent);
+    void Remove(ILayoutElement* node);
+
+    QRectF GetPos(ILayoutElement* node);
 
 signals:
-    void OnNodePosition(MapNode* node, QPointF oldPos, QPointF newPos);
+    void OnElementPosition(ILayoutElement* node, QPointF newPos);
 
 private:
-    int UpdateAndGetNodeSize(MapNode* node, int topPos, int parentLeftPos);
+    int UpdateAndGetNodeSize(ILayoutElement* node, int topPos, int parentLeftPos);
 
     struct Block {
-        MapNode* parent;
-        QVector<MapNode*> nodes;
+        ILayoutElement* parent;
+        QVector<ILayoutElement*> nodes;
         QVector<int> nodeVertPos;
         QPointF pos;
     };
 
-    QMap<MapNode*, Block> m_blocks;
-    QMap<MapNode*, QPointF> m_prevBlocks;
+    QMap<ILayoutElement*, Block> m_blocks;
+    QMap<ILayoutElement*, QRectF> m_posCache;
 };
-
-}
 
 #endif // MAPLAYOUT_H

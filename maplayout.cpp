@@ -1,23 +1,21 @@
 #include "maplayout.h"
 
-namespace MindMapRa {
-
 MapLayout::MapLayout(QObject *parent) : QObject(parent)
 {
     m_blocks[NULL] = Block();
 }
 
-void MapLayout::OnNodeAdded(MapNode* node, MapNode* parent)
+void MapLayout::Add(ILayoutElement* node, ILayoutElement* parent)
 {
     Block& blockFrom = m_blocks[parent];
     blockFrom.nodes.append(node);
 }
 
-void MapLayout::OnNodeDeleted(MapNode* node)
+void MapLayout::Remove(ILayoutElement* node)
 {
     Q_ASSERT(m_blocks.contains(node) == false);
 
-    QMapIterator<MapNode*, Block> it(m_blocks);
+    QMapIterator<ILayoutElement*, Block> it(m_blocks);
     while (it.hasNext()) {
         it.next();
         if (it.value().nodes.contains(node))
@@ -27,23 +25,30 @@ void MapLayout::OnNodeDeleted(MapNode* node)
     }
 }
 
+QRectF MapLayout::GetPos(ILayoutElement *node)
+{
+    if (m_posCache.contains(node))
+        return m_posCache[node];
+    return QRectF();
+}
+
 void MapLayout::FixAllPositions()
 {
     Q_ASSERT(m_blocks[NULL].nodes.empty() == false);
-    MapNode*& rootNode = m_blocks[NULL].nodes.first();
+    ILayoutElement*& rootNode = m_blocks[NULL].nodes.first();
     UpdateAndGetNodeSize(rootNode, 0, 0);
 }
 
-int MapLayout::UpdateAndGetNodeSize(MapNode *node, int topPos, int parentLeftPos)
+int MapLayout::UpdateAndGetNodeSize(ILayoutElement* node, int topPos, int parentLeftPos)
 {
-    QMap<MapNode*, Block>::iterator blockIt = m_blocks.find(node);
+    QMap<ILayoutElement*, Block>::iterator blockIt = m_blocks.find(node);
     int size = 0;
     QPointF newPos(parentLeftPos, topPos);
 
     if (blockIt != m_blocks.end()) {
 
         Block& block = blockIt.value();
-        const int childLeftPos = parentLeftPos + 200;
+        const int childLeftPos = parentLeftPos + node->ElementSize().width() + 50;
         int childrenSize = 0;
 
         for(int childIdx = 0; childIdx < block.nodes.size(); ++childIdx) {
@@ -53,20 +58,18 @@ int MapLayout::UpdateAndGetNodeSize(MapNode *node, int topPos, int parentLeftPos
         }
 
         newPos = QPointF(parentLeftPos, topPos + childrenSize/2);
-        block.pos = QPointF(parentLeftPos + 200, topPos);
+        block.pos = QPointF(childLeftPos, topPos);
 
         size = childrenSize;
     }
 
-    const int minimumBlockSize = 50;
+    const int minimumBlockSize = 20;
     // if it hasnt children
     if (size < minimumBlockSize)
         size = minimumBlockSize;
 
-    QPointF prevPos = newPos;
-    emit OnNodePosition(node, prevPos, newPos);
+    m_posCache[node] = QRectF(newPos, node->ElementSize());
+    emit OnElementPosition(node, newPos);
 
     return size;
-}
-
 }

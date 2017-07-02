@@ -14,6 +14,9 @@ QT_END_NAMESPACE
 
 class ScrollAreaPan;
 class MapNodeWidget;
+class MapLayout;
+
+#include "maplayout.h"
 
 namespace MindMapRa {
     class MapContext;
@@ -31,24 +34,27 @@ public:
     void OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapNode* parent);
     void OnNodeDeleted(MindMapRa::MapNode* node);
     void OnNodeFocus(MindMapRa::MapNode* node, bool isSetFocus);
-    void OnNodePosition(MindMapRa::MapNode* node, QPointF oldPos, QPointF newPos);
 
     void keyPressEvent(QKeyEvent* ev);
+
 
 signals:
 
 public slots:
     void OnChangeFocusUserRequest(MapNodeWidget* widget);
+    void OnNodePosition(ILayoutElement* node, QPointF pos);
 
 private:
     QPainterPath GenPath(MindMapRa::MapNode* parent, MindMapRa::MapNode* child);
 
     QGraphicsScene* m_nodeScene;
+    MindMapRa::MapContext* m_model;
+    MapLayout* m_layout;
+
     QGraphicsView* m_nodeView;
     ScrollAreaPan* m_scrollArea;
 
     QMap<MindMapRa::MapNode*, MapNodeWidget*> m_nodeWidgets;
-    MindMapRa::MapContext* m_model;
     QMap<MapNodeWidget*, QGraphicsPathItem*> m_pathWidgets;
 };
 

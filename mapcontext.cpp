@@ -1,27 +1,17 @@
 #include "mapcontext.h"
 #include "nodestorage.h"
 #include "mapnode.h"
-#include "maplayout.h"
 
 #include <QMap>
-#include <QPointF>
 
 namespace MindMapRa {
 
 MapContext::MapContext(QObject *parent)
 : QObject(parent)
 , m_nodeStorage(new NodeStorage(this))
-, m_layout(new MapLayout)
 , m_curNode(NULL)
 {
-    connect(m_nodeStorage, SIGNAL(OnNodeAdded(MapNode*,MapNode*)),
-            m_layout,      SLOT(OnNodeAdded(MapNode*,MapNode*)));
-    connect(m_nodeStorage, SIGNAL(OnNodeDeleted(MapNode*)),
-            m_layout,      SLOT(OnNodeDeleted(MapNode*)));
-    connect(m_layout, SIGNAL(OnNodePosition(MapNode*,QPointF,QPointF)),
-            this,     SLOT(InternalOnNodePosition(MapNode*,QPointF,QPointF)));
-
-    m_curNode = new MapNode(tr("Press Space to edit"), QPointF(0, 0));
+    m_curNode = new MapNode(tr("Press Space to edit"));
     m_nodeStorage->AddNode(m_curNode, NULL);
 }
 
@@ -30,7 +20,7 @@ MapNode* MapContext::AddChildAtCursor() {
         return NULL;
 
     MapNode* oldNode = m_curNode;
-    m_curNode = new MapNode("", QPointF(0, 0));
+    m_curNode = new MapNode("");
     m_nodeStorage->AddNode(m_curNode, oldNode);
 
     Q_FOREACH(IMapContextClientEventListener* evListener, m_eventListeners)
@@ -39,8 +29,6 @@ MapNode* MapContext::AddChildAtCursor() {
         evListener->OnNodeFocus(oldNode, false);
         evListener->OnNodeFocus(m_curNode, true);
     }
-
-    m_layout->FixAllPositions();
 
     return m_curNode;
 }
@@ -73,21 +61,13 @@ void MapContext::SelectNode(MapNode *node) {
 
 void MapContext::ChangeTextAtCursor(const QString &text)
 {
+    Q_UNUSED(text);
     // todo: impl
 }
 
 MapNode *MapContext::GetNodeParent(MapNode *node)
 {
     return m_nodeStorage->AllNodes().value(node, NULL);
-}
-
-void MapContext::InternalOnNodePosition(MapNode *node, QPointF oldPos, QPointF newPos)
-{
-    Q_FOREACH(IMapContextClientEventListener* evListener, m_eventListeners)
-    {
-        node->SetPos(newPos);
-        evListener->OnNodePosition(node, oldPos, newPos);
-    }
 }
 
 void MapContext::AddEventListener(IMapContextClientEventListener* listener) {

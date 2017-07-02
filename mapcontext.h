@@ -10,7 +10,6 @@ namespace MindMapRa {
 class MapNode;
 class MapContextImpl;
 class NodeStorage;
-class MapLayout;
 
 class IMapContextClientEventListener {
 public:
@@ -19,7 +18,6 @@ public:
     virtual void OnNodeAdded(MapNode* node, MapNode* parent) = 0;
     virtual void OnNodeDeleted(MapNode* node) = 0;
     virtual void OnNodeFocus(MapNode* node, bool isSetFocus) = 0;
-    virtual void OnNodePosition(MapNode *node, QPointF oldPos, QPointF newPos) = 0;
 };
 
 /*
@@ -45,12 +43,8 @@ public slots:
     void ChangeTextAtCursor(const QString& text);
     MapNode* GetNodeParent(MapNode* node);
 
-private slots:
-    void InternalOnNodePosition(MapNode* node, QPointF oldPos, QPointF newPos);
-
 private:
     NodeStorage* m_nodeStorage;
-    MapLayout* m_layout;
     MapNode* m_curNode;
 
     QVector<IMapContextClientEventListener*> m_eventListeners;
