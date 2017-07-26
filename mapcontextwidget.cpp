@@ -10,7 +10,6 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGraphicsPathItem>
-#include <QDebug>
 
 MapContextWidget::MapContextWidget(QWidget *parent, MindMapRa::MapContext* model)
     : QFrame(parent)
@@ -147,8 +146,6 @@ QPainterPath MapContextWidget::GenPath(MindMapRa::MapNode* parent, MindMapRa::Ma
 
     const QPointF to_1 = childRect.topLeft() + QPointF(0, childRect.height() / 2);
     const QPointF to_2 = to_1 - QPointF(curvePointsOffset, 0.f);
-
-    qDebug() << from_1 << from_2 << to_1 << to_2;
 
     QPainterPath path;
     path.moveTo(from_1);
