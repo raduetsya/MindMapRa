@@ -33,7 +33,8 @@ signals:
     void OnElementPosition(ILayoutElement* node, QPointF newPos);
 
 private:
-    int UpdateAndGetNodeSize(ILayoutElement* node, int topPos, int parentLeftPos);
+    int UpdateAndGetNodeSize(ILayoutElement* node, int topPos, int parentLeftPos, QMap<ILayoutElement*, QPointF>& res);
+    void EmitPositionCallbacks(ILayoutElement *node, const QMap<ILayoutElement *, QPointF> &res);
 
     struct Block {
         ILayoutElement* parent;

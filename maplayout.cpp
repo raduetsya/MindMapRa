@@ -36,10 +36,27 @@ void MapLayout::FixAllPositions()
 {
     Q_ASSERT(m_blocks[NULL].nodes.empty() == false);
     ILayoutElement*& rootNode = m_blocks[NULL].nodes.first();
-    UpdateAndGetNodeSize(rootNode, 0, 0);
+    QMap<ILayoutElement*, QPointF> res;
+    UpdateAndGetNodeSize(rootNode, 0, 0, res);
+    EmitPositionCallbacks(rootNode, res);
 }
 
-int MapLayout::UpdateAndGetNodeSize(ILayoutElement* node, int topPos, int parentLeftPos)
+void MapLayout::EmitPositionCallbacks(ILayoutElement* node, const QMap<ILayoutElement*, QPointF>& res)
+{
+    QMap<ILayoutElement*, Block>::iterator blockIt = m_blocks.find(node);
+
+    if (res.contains(node))
+        emit OnElementPosition(node, res[node]);
+
+    if (blockIt != m_blocks.end()) {
+        Block& block = blockIt.value();
+        for(int childIdx = 0; childIdx < block.nodes.size(); ++childIdx) {
+            EmitPositionCallbacks(block.nodes[childIdx], res);
+        }
+    }
+}
+
+int MapLayout::UpdateAndGetNodeSize(ILayoutElement* node, int topPos, int parentLeftPos, QMap<ILayoutElement*, QPointF>& res)
 {
     QMap<ILayoutElement*, Block>::iterator blockIt = m_blocks.find(node);
     int size = 0;
@@ -53,7 +70,7 @@ int MapLayout::UpdateAndGetNodeSize(ILayoutElement* node, int topPos, int parent
 
         for(int childIdx = 0; childIdx < block.nodes.size(); ++childIdx) {
             const int childTop = topPos + childrenSize;
-            const int childSize = UpdateAndGetNodeSize(block.nodes[childIdx], childTop, childLeftPos);
+            const int childSize = UpdateAndGetNodeSize(block.nodes[childIdx], childTop, childLeftPos, res);
             childrenSize += childSize;
         }
 
@@ -62,6 +79,11 @@ int MapLayout::UpdateAndGetNodeSize(ILayoutElement* node, int topPos, int parent
 
         size = childrenSize;
     }
+    else
+    {
+        size = node->ElementSize().height();
+        newPos = QPointF(parentLeftPos, topPos + size/2);
+    }
 
     const int minimumBlockSize = 20;
     // if it hasnt children
@@ -69,7 +91,7 @@ int MapLayout::UpdateAndGetNodeSize(ILayoutElement* node, int topPos, int parent
         size = minimumBlockSize;
 
     m_posCache[node] = QRectF(newPos, node->ElementSize());
-    emit OnElementPosition(node, newPos);
+    res[node] = newPos;
 
     return size;
 }

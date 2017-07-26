@@ -62,11 +62,6 @@ void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapNode*
         m_layout->FixAllPositions();
     }
 
-    // connect to parent
-    if (parent)
-    {
-        m_pathWidgets.insert(m_nodeWidgets[node], m_nodeScene->addPath(GenPath(parent, node)));
-    }
 }
 
 void MapContextWidget::OnNodeDeleted(MindMapRa::MapNode *node)
@@ -110,13 +105,39 @@ void MapContextWidget::OnChangeFocusUserRequest(MapNodeWidget *widget)
 
 void MapContextWidget::OnNodePosition(ILayoutElement *node, QPointF pos)
 {
+    // problem: callback called on child before parent, need to prevent this by proof, not by coincidence
+
     MapNodeWidget* widget = dynamic_cast<MapNodeWidget*>(node);
     widget->move(pos.x(), pos.y());
+
+    MindMapRa::MapNode* child = NULL;
+    QMapIterator<MindMapRa::MapNode*, MapNodeWidget*> itChild(m_nodeWidgets);
+    while (itChild.hasNext())
+    {
+        itChild.next();
+        if (itChild.value() == widget)
+            child = itChild.key();
+    }
+
+    MindMapRa::MapNode* parent = m_model->GetNodeParent(child);
+
+    if (!parent)
+        return;
+
+    if (!m_pathWidgets.contains(widget))
+    {
+        m_pathWidgets.insert(m_nodeWidgets[child], m_nodeScene->addPath(GenPath(parent, child)));
+    }
+    else
+    if (m_pathWidgets.contains(widget))
+    {
+        m_pathWidgets[widget]->setPath(GenPath(parent, child));
+    }
 }
 
 QPainterPath MapContextWidget::GenPath(MindMapRa::MapNode* parent, MindMapRa::MapNode* child)
 {
-    const float curvePointsOffset = 5.f;
+    const float curvePointsOffset = 20.f;
 
     QRectF parentRect = m_layout->GetPos( m_nodeWidgets[parent] );
     QRectF childRect = m_layout->GetPos( m_nodeWidgets[child] );

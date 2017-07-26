@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_mainWidget = new MapContextWidget(centralWidget);
     layout->addWidget(m_mainWidget, 0, 0);
+
+    resize(800, 800);
 }
 
 MainWindow::~MainWindow()
