@@ -1,88 +1,17 @@
 #include "mapcontext.h"
-#include "nodestorage.h"
 #include "mapnode.h"
 
 #include <QMap>
 
 namespace MindMapRa {
 
-MapContext::MapContext(QObject *parent)
-: QObject(parent)
-, m_nodeStorage(new NodeStorage(this))
-, m_curNode(NULL)
+MapContext::MapContext()
 {
-    m_curNode = new MapNode(tr("Press Space to edit"));
-    m_nodeStorage->AddNode(m_curNode, NULL);
-}
-
-MapNode* MapContext::AddChildAtCursor() {
-    if (!m_curNode)
-        return NULL;
-
-    MapNode* oldNode = m_curNode;
-    m_curNode = new MapNode("");
-    m_nodeStorage->AddNode(m_curNode, oldNode);
-
-    Q_FOREACH(IMapContextClientEventListener* evListener, m_eventListeners)
-    {
-        evListener->OnNodeAdded(m_curNode, oldNode);
-        evListener->OnNodeFocus(oldNode, false);
-        evListener->OnNodeFocus(m_curNode, true);
-    }
-
-    return m_curNode;
-}
-
-void MapContext::MoveCursor(int hor, int ver) {
-    if (!m_curNode)
-        return;
-
-    Q_UNUSED(hor);
-    Q_UNUSED(ver);
-}
-
-void MapContext::DeleteNodeAtCursor() {
-    if (!m_curNode)
-        return;
-}
-
-void MapContext::SelectNode(MapNode *node) {
-    Q_ASSERT(node != NULL);
-
-    MapNode* oldNode = node;
-    m_curNode = node;
-
-    Q_FOREACH(IMapContextClientEventListener* evListener, m_eventListeners)
-    {
-        if (oldNode) evListener->OnNodeFocus(oldNode, false);
-        evListener->OnNodeFocus(node, true);
-    }
-}
-
-void MapContext::ChangeTextAtCursor(const QString &text)
-{
-    Q_UNUSED(text);
-    // todo: impl
-}
-
-MapNode *MapContext::GetNodeParent(MapNode *node)
-{
-    return m_nodeStorage->AllNodes().value(node, NULL);
+    AddNode(NULL);
 }
 
 void MapContext::AddEventListener(IMapContextClientEventListener* listener) {
     m_eventListeners.push_back(listener);
-}
-
-void MapContext::PresentEntireMapAsEvents(IMapContextClientEventListener* listener) {
-    const QMap<MapNode*, MapNode*>& allNodes = m_nodeStorage->AllNodes();
-    {
-        QMapIterator<MapNode*, MapNode*> it(allNodes);
-        while(it.hasNext()) {
-            it.next();
-            listener->OnNodeAdded(it.key(), it.value());
-        }
-    }
 }
 
 void MapContext::RemoveEventListener(IMapContextClientEventListener* listener) {
@@ -91,10 +20,118 @@ void MapContext::RemoveEventListener(IMapContextClientEventListener* listener) {
         m_eventListeners.erase(m_eventListeners.begin() + index);
 }
 
-MapNode *MapContext::GetCurrenNode()
+void MapContext::PresentEntireMapAsEvents(IMapContextClientEventListener* listener) {
+    Q_FOREACH(MapNode* node, m_nodes)
+    {
+        Q_FOREACH(IMapContextClientEventListener* listener, m_eventListeners)
+        {
+            listener->OnNodeAdded(node, this);
+        }
+    }
+}
+
+MapNode *MapContext::AddNode(MapNode *parent)
 {
-    return m_curNode;
+    const bool isRoot = (parent == NULL && m_nodes.empty());
+    if (!isRoot)
+        Q_ASSERT(m_nodes.contains(parent));
+
+    MapNode* newNode = new MapNode("");
+    m_nodes.push_back(newNode);
+    m_parents[newNode] = parent;
+    m_childs[parent].push_back(newNode);
+    Q_FOREACH(IMapContextClientEventListener* listener, m_eventListeners)
+    {
+        listener->OnNodeAdded(newNode, this);
+    }
+    return newNode;
+    // TODO: make undo
 }
 
+void MapContext::RemoveNode(MapNode *node)
+{
+    Q_FOREACH(IMapContextClientEventListener* listener, m_eventListeners)
+    {
+        listener->OnNodeDeleted(node, this);
+    }
+
+    m_nodes.removeAll(node);
+    m_parents.remove(node);
+    if (m_childs.contains(node))
+    {
+        Q_FOREACH(MapNode* child, m_childs[node])
+        {
+            RemoveNode(child);
+        }
+    }
+    // TODO: make undo
 }
 
+MapNode *MapContext::GetRootNode()
+{
+    if (m_nodes.empty())
+        return NULL;
+
+    return m_nodes.first();
+}
+
+MapNode *MapContext::GetNodeParent(MapNode *node)
+{
+    if (!m_parents.contains(node))
+        return NULL;
+
+    return m_parents[node];
+}
+
+MapNode *MapContext::GetNodeFirstChild(MapNode *parent)
+{
+    if (m_childs.contains(parent))
+        return NULL;
+
+    if (m_childs[parent].empty())
+        return NULL;
+
+    return m_childs[parent].first();
+}
+
+MapNode *MapContext::GetNextSibling(MapNode *node)
+{
+    if (!m_parents.contains(node))
+        return NULL;
+
+    MapNode* parent = m_parents[node];
+
+    if (!m_childs.contains(parent))
+        return NULL;
+
+    const QVector<MapNode*>& siblings = m_childs[parent];
+    int index = siblings.indexOf(node);
+
+    if (index == -1 || index == siblings.size() - 1)
+        return NULL;
+
+    return siblings[index + 1];
+}
+
+MapNode *MapContext::GetPrevSibling(MapNode *node)
+{
+    if (!m_parents.contains(node))
+        return NULL;
+
+    MapNode* parent = m_parents[node];
+
+    if (!m_childs.contains(parent))
+        return NULL;
+
+    const QVector<MapNode*>& siblings = m_childs[parent];
+    int index = siblings.indexOf(node);
+
+    if (index == -1 || index == 0)
+        return NULL;
+
+    return siblings[index - 1];
+}
+
+
+
+}

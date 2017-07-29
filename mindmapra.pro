@@ -15,18 +15,18 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     mapcontext.cpp \
-    nodestorage.cpp \
     mapnode.cpp \
     maplayout.cpp \
     scrollareapan.cpp \
     mapcontextwidget.cpp \
-    mapnodewidget.cpp
+    mapnodewidget.cpp \
+    mapcursor.cpp
 
 HEADERS  += mainwindow.h \
     mapcontext.h \
-    nodestorage.h \
     mapnode.h \
     maplayout.h \
     scrollareapan.h \
     mapcontextwidget.h \
-    mapnodewidget.h
+    mapnodewidget.h \
+    mapcursor.h

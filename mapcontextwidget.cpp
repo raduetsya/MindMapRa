@@ -3,6 +3,7 @@
 #include "mapnodewidget.h"
 #include "mapnode.h"
 #include "mapcontext.h"
+#include "mapcursor.h"
 #include "maplayout.h"
 
 #include <QLabel>
@@ -14,7 +15,7 @@
 MapContextWidget::MapContextWidget(QWidget *parent, MindMapRa::MapContext* model)
     : QFrame(parent)
     , m_nodeScene(new QGraphicsScene)
-    , m_model(model)
+    , m_context(model)
     , m_layout(new MapLayout)
 {
     m_nodeView = new QGraphicsView(m_nodeScene);
@@ -32,14 +33,16 @@ MapContextWidget::MapContextWidget(QWidget *parent, MindMapRa::MapContext* model
     connect(m_layout, SIGNAL(OnElementPosition(ILayoutElement*,QPointF)),
             this,     SLOT(OnNodePosition(ILayoutElement*,QPointF)));
 
-    if (m_model == NULL)
-        m_model = new MindMapRa::MapContext;
+    if (m_context == NULL)
+        m_context = new MindMapRa::MapContext;
 
-    m_model->AddEventListener(this);
-    m_model->PresentEntireMapAsEvents(this);
+    m_context->AddEventListener(this);
+    m_context->PresentEntireMapAsEvents(this);
+
+    m_cursor = new MindMapRa::MapCursor(m_context);
 }
 
-void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapNode* parent)
+void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapContext* caller)
 {
     // create node
     {
@@ -56,6 +59,7 @@ void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapNode*
 
     // create layout element
     {
+        MindMapRa::MapNode* parent = caller->GetNodeParent(node);
         MapNodeWidget* parentWidget = (parent ? m_nodeWidgets[parent] : NULL);
         m_layout->Add(m_nodeWidgets[node], parentWidget);
         m_layout->FixAllPositions();
@@ -63,29 +67,28 @@ void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapNode*
 
 }
 
-void MapContextWidget::OnNodeDeleted(MindMapRa::MapNode *node)
+void MapContextWidget::OnNodeDeleted(MindMapRa::MapNode* node, MindMapRa::MapContext* caller)
 {
     if (m_nodeWidgets.count(node) > 0)
     {
         delete m_nodeWidgets[node];
         m_nodeWidgets.remove(node);
     }
-}
 
-void MapContextWidget::OnNodeFocus(MindMapRa::MapNode *node, bool isSetFocus)
-{
-    m_nodeWidgets[node]->SetFocusNode(isSetFocus);
+    // TODO: delete path
+
+    m_layout->FixAllPositions();
 }
 
 void MapContextWidget::keyPressEvent(QKeyEvent *ev)
 {
     if (ev->key() == Qt::Key_F2)
     {
-        MindMapRa::MapNode* newNode = m_model->AddChildAtCursor();
+        MindMapRa::MapNode* newNode = m_cursor->CreateChildNode();
         m_nodeWidgets[ newNode ]->EnableTextEdit(true);
     }
     if (ev->key() == Qt::Key_F3)
-        m_nodeWidgets[ m_model->GetCurrenNode() ]->EnableTextEdit(true);
+        m_nodeWidgets[ m_cursor->GetNode() ]->EnableTextEdit(true);
 }
 
 void MapContextWidget::OnChangeFocusUserRequest(MapNodeWidget *widget)
@@ -96,7 +99,7 @@ void MapContextWidget::OnChangeFocusUserRequest(MapNodeWidget *widget)
         it.next();
         if (it.value() == widget)
         {
-            m_model->SelectNode(it.key());
+            m_cursor->SetNode(it.key());
             break;
         }
     }
@@ -118,7 +121,7 @@ void MapContextWidget::OnNodePosition(ILayoutElement *node, QPointF pos)
             child = itChild.key();
     }
 
-    MindMapRa::MapNode* parent = m_model->GetNodeParent(child);
+    MindMapRa::MapNode* parent = m_context->GetNodeParent(child);
 
     if (!parent)
         return;
