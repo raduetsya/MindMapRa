@@ -85,7 +85,7 @@ MapNode *MapContext::GetNodeParent(MapNode *node)
 
 MapNode *MapContext::GetNodeFirstChild(MapNode *parent)
 {
-    if (m_childs.contains(parent))
+    if (!m_childs.contains(parent))
         return NULL;
 
     if (m_childs[parent].empty())

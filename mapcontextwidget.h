@@ -36,14 +36,11 @@ public:
     void OnNodeDeleted(MindMapRa::MapNode* node, MindMapRa::MapContext* caller); // override
 
 
-    void keyPressEvent(QKeyEvent* ev);
-
-
-signals:
-
 public slots:
-    void OnChangeFocusUserRequest(MapNodeWidget* widget);
     void OnNodePosition(ILayoutElement* node, QPointF pos);
+    void OnChangeFocusUserRequest(MapNodeWidget* widget);
+    void OnCursorMoveRequested(bool isUp, bool isDown, bool isLeft, bool isRight);
+    void OnCursorCreateNodeRequested();
 
 private:
     QPainterPath GenPath(MindMapRa::MapNode* parent, MindMapRa::MapNode* child);

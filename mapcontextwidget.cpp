@@ -52,6 +52,10 @@ void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapConte
 
         connect(newWidget,  SIGNAL(OnChangeFocusUserRequest(MapNodeWidget*)),
                 this,       SLOT(OnChangeFocusUserRequest(MapNodeWidget*)));
+        connect(newWidget,  SIGNAL(OnCursorMoveRequested(bool,bool,bool,bool)),
+                this,       SLOT(OnCursorMoveRequested(bool,bool,bool,bool)));
+        connect(newWidget,  SIGNAL(OnCursorCreateNodeRequested()),
+                this,       SLOT(OnCursorCreateNodeRequested()));
 
         m_nodeScene->addWidget(newWidget);
         m_nodeWidgets[node] = newWidget;
@@ -80,29 +84,54 @@ void MapContextWidget::OnNodeDeleted(MindMapRa::MapNode* node, MindMapRa::MapCon
     m_layout->FixAllPositions();
 }
 
-void MapContextWidget::keyPressEvent(QKeyEvent *ev)
-{
-    if (ev->key() == Qt::Key_F2)
-    {
-        MindMapRa::MapNode* newNode = m_cursor->CreateChildNode();
-        m_nodeWidgets[ newNode ]->EnableTextEdit(true);
-    }
-    if (ev->key() == Qt::Key_F3)
-        m_nodeWidgets[ m_cursor->GetNode() ]->EnableTextEdit(true);
-}
-
 void MapContextWidget::OnChangeFocusUserRequest(MapNodeWidget *widget)
 {
+    MindMapRa::MapNode* oldNode = m_cursor->GetNode();
+
     QMapIterator<MindMapRa::MapNode*, MapNodeWidget*> it(m_nodeWidgets);
     while(it.hasNext())
     {
         it.next();
         if (it.value() == widget)
         {
-            m_cursor->SetNode(it.key());
+            MindMapRa::MapNode* newNode = it.key();
+            m_cursor->SetNode(newNode);
+            m_nodeWidgets[ oldNode ]->SetFocusNode(false);
+            m_nodeWidgets[ newNode ]->SetFocusNode(true);
             break;
         }
     }
+}
+
+void MapContextWidget::OnCursorMoveRequested(bool isUp, bool isDown, bool isLeft, bool isRight)
+{
+    MindMapRa::MapNode* oldNode = m_cursor->GetNode();
+
+    if (isUp)
+        m_cursor->MoveCursor(MindMapRa::MapCursor::CD_Up);
+    if (isDown)
+        m_cursor->MoveCursor(MindMapRa::MapCursor::CD_Down);
+    if (isLeft)
+        m_cursor->MoveCursor(MindMapRa::MapCursor::CD_Left);
+    if (isRight)
+        m_cursor->MoveCursor(MindMapRa::MapCursor::CD_Right);
+
+    MindMapRa::MapNode* newNode = m_cursor->GetNode();
+
+    if (oldNode != newNode)
+    {
+        m_nodeWidgets[ oldNode ]->SetFocusNode(false);
+        m_nodeWidgets[ newNode ]->SetFocusNode(true);
+    }
+}
+
+void MapContextWidget::OnCursorCreateNodeRequested()
+{
+    MindMapRa::MapNode* oldNode = m_cursor->GetNode();
+    MindMapRa::MapNode* newNode = m_cursor->CreateChildNode();
+    m_nodeWidgets[ oldNode ]->SetFocusNode(false);
+    m_nodeWidgets[ newNode ]->SetFocusNode(true);
+    m_cursor->SetNode(newNode);
 }
 
 void MapContextWidget::OnNodePosition(ILayoutElement *node, QPointF pos)

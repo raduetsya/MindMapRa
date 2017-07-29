@@ -4,6 +4,32 @@
 #include <QGridLayout>
 #include <QPlainTextEdit>
 
+class NodeTextEdit : public QPlainTextEdit
+{
+public:
+    explicit NodeTextEdit(MapNodeWidget *parent = 0)
+        : QPlainTextEdit(parent)
+        , m_parent(parent)
+    {}
+
+    MapNodeWidget* m_parent;
+
+    void mousePressEvent(QMouseEvent* ev) Q_DECL_OVERRIDE
+    {
+        if (!m_parent->IsInFocus())
+            m_parent->mousePressEvent(ev);
+
+        QPlainTextEdit::mousePressEvent(ev);
+    }
+
+    void keyPressEvent(QKeyEvent* ev) Q_DECL_OVERRIDE
+    {
+        m_parent->keyPressEvent(ev);
+        if (!ev->isAccepted())
+            QPlainTextEdit::keyPressEvent(ev);
+    }
+};
+
 MapNodeWidget::MapNodeWidget(QWidget* parent)
     : QFrame(parent)
 {
@@ -12,19 +38,20 @@ MapNodeWidget::MapNodeWidget(QWidget* parent)
 
     QGridLayout* layout = new QGridLayout(this);
 
-    m_label = new QPlainTextEdit(this);
-    m_label->setPlaceholderText("Press SPACE to edit");
+    m_label = new NodeTextEdit(this);
+    m_label->setPlaceholderText("Press SPACE to EDIT");
     m_label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     m_label->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_label->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_label->setReadOnly(true);
     layout->addWidget(m_label);
+    layout->setMargin(0);
 
     connect(m_label, SIGNAL(textChanged()),
             this, SLOT(OnTextChanged()));
 
-    this->setFrameShape(QFrame::StyledPanel);
-    this->setFrameShadow(QFrame::Raised);
+    this->setFrameShape(QFrame::Box);
+    //this->setFrameShadow(QFrame::Raised);
 
     SetFocusNode(false);
     OnTextChanged();
@@ -38,21 +65,28 @@ QSizeF MapNodeWidget::ElementSize()
 void MapNodeWidget::SetText(const QString &text)
 {
     Q_UNUSED(text);
-    // m_label->setText(text);
+    m_label->document()->setPlainText(text);
 }
 
 void MapNodeWidget::SetFocusNode(bool isFocus)
 {
     if (isFocus)
-        setBackgroundRole(QPalette::Light);
+        setBackgroundRole(QPalette::Button);
     else
         setBackgroundRole(QPalette::Dark);
+
+    m_label->setReadOnly(!isFocus);
+    if (isFocus)
+    {
+        this->setFocus();
+        m_label->setFocus();
+    }
 }
 
-void MapNodeWidget::EnableTextEdit(bool isEnable)
+
+bool MapNodeWidget::IsInFocus()
 {
-    m_label->setReadOnly(!isEnable);
-    m_label->setFocus();
+    return !m_label->isReadOnly();
 }
 
 void MapNodeWidget::mousePressEvent(QMouseEvent *ev)
@@ -61,10 +95,25 @@ void MapNodeWidget::mousePressEvent(QMouseEvent *ev)
     emit OnChangeFocusUserRequest(this);
 }
 
+void MapNodeWidget::keyPressEvent(QKeyEvent *ev)
+{
+    if (ev->key() == Qt::Key_Tab)
+        emit OnCursorCreateNodeRequested();
+    else if (ev->key() == Qt::Key_Up || ev->key() == Qt::Key_Down || ev->key() == Qt::Key_Left || ev->key() == Qt::Key_Right)
+        emit OnCursorMoveRequested(
+                ev->key() == Qt::Key_Up,
+                ev->key() == Qt::Key_Down,
+                ev->key() == Qt::Key_Left,
+                ev->key() == Qt::Key_Right
+                );
+    else
+        QFrame::keyPressEvent(ev);
+}
+
 void MapNodeWidget::OnTextChanged()
 {
     const QFontMetrics fm(m_label->font());
-    const QSize addSize(40, 40);
+    const QSize addSize(15, 10);
     const QSize maxSize(300, 60);
 
     const QString dataText = m_label->document()->toPlainText();

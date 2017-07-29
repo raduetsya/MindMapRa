@@ -25,6 +25,8 @@ MapNode *MapCursor::GetNode()
 
 void MindMapRa::MapCursor::MoveCursor(MindMapRa::MapCursor::CursorDirection dir)
 {
+    MapNode* oldNode = m_node;
+
     switch(dir) {
     case CD_Up:
         m_node = m_context->GetPrevSibling(m_node);
@@ -42,7 +44,11 @@ void MindMapRa::MapCursor::MoveCursor(MindMapRa::MapCursor::CursorDirection dir)
         return;
     }
 
-    emit OnNodeFocusChanged(m_node);
+    if (m_node == NULL)
+        m_node = oldNode;
+
+    if (oldNode != m_node)
+        emit OnNodeFocusChanged(m_node);
 }
 
 MindMapRa::MapNode *MindMapRa::MapCursor::CreateChildNode()

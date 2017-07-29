@@ -22,12 +22,15 @@ public:
 
     void SetText(const QString& text);
     void SetFocusNode(bool isFocus);
-    void EnableTextEdit(bool isEnable);
+    bool IsInFocus();
 
     void mousePressEvent(QMouseEvent* ev) Q_DECL_OVERRIDE;
+    void keyPressEvent(QKeyEvent* ev) Q_DECL_OVERRIDE;
 
 signals:
     void OnChangeFocusUserRequest(MapNodeWidget*);
+    void OnCursorMoveRequested(bool isUp, bool isDown, bool isLeft, bool isRight);
+    void OnCursorCreateNodeRequested();
 
 private slots:
     void OnTextChanged();
