@@ -1,5 +1,4 @@
 #include "mapcontextwidget.h"
-#include "scrollareapan.h"
 #include "mapnodewidget.h"
 #include "mapnode.h"
 #include "mapcontext.h"
@@ -151,17 +150,13 @@ void MapContextWidget::OnCursorCreateNodeRequested()
 
 void MapContextWidget::OnCursorRemoveNodeRequested()
 {
-    // MindMapRa::MapNode* oldNode = m_cursor->GetNode();
     m_cursor->DeleteCurrentNode();
     MindMapRa::MapNode* newNode = m_cursor->GetNode();
-    // m_nodeWidgets[ oldNode ]->SetFocusNode(false);
     m_nodeWidgets[ newNode ]->SetFocusNode(true);
 }
 
 void MapContextWidget::OnNodePosition(ILayoutElement *node, QPointF pos)
 {
-    // problem: callback called on child before parent, need to prevent this by proof, not by coincidence
-
     MapNodeWidget* widget = dynamic_cast<MapNodeWidget*>(node);
     widget->move(pos.x(), pos.y());
 
@@ -179,15 +174,10 @@ void MapContextWidget::OnNodePosition(ILayoutElement *node, QPointF pos)
     if (!parent)
         return;
 
-    if (!m_pathWidgets.contains(widget))
-    {
-        m_pathWidgets.insert(m_nodeWidgets[child], m_nodeScene->addPath(GenPath(parent, child)));
-    }
-    else
     if (m_pathWidgets.contains(widget))
-    {
         m_pathWidgets[widget]->setPath(GenPath(parent, child));
-    }
+    else
+        m_pathWidgets.insert(m_nodeWidgets[child], m_nodeScene->addPath(GenPath(parent, child)));
 }
 
 QPainterPath MapContextWidget::GenPath(MindMapRa::MapNode* parent, MindMapRa::MapNode* child)

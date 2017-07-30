@@ -12,15 +12,14 @@ class QGraphicsView;
 class QGraphicsPathItem;
 QT_END_NAMESPACE
 
-class ScrollAreaPan;
 class MapNodeWidget;
 class MapLayout;
 
 #include "maplayout.h"
 
 namespace MindMapRa {
-    class MapContext;
-    class MapCursor;
+class MapContext;
+class MapCursor;
 }
 
 #include "mapcontext.h" // todo: move IMapContextClientEventListener impl to another file, and rename
@@ -50,7 +49,6 @@ private:
     MapLayout* m_layout;
 
     QGraphicsView* m_nodeView;
-    ScrollAreaPan* m_scrollArea;
 
     QMap<MindMapRa::MapNode*, MapNodeWidget*> m_nodeWidgets;
     QMap<MapNodeWidget*, QGraphicsPathItem*> m_pathWidgets;
