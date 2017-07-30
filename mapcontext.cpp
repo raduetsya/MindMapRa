@@ -10,26 +10,6 @@ MapContext::MapContext()
     AddNode(NULL);
 }
 
-void MapContext::AddEventListener(IMapContextClientEventListener* listener) {
-    m_eventListeners.push_back(listener);
-}
-
-void MapContext::RemoveEventListener(IMapContextClientEventListener* listener) {
-    const int index = m_eventListeners.indexOf(listener);
-    if (index >= 0)
-        m_eventListeners.erase(m_eventListeners.begin() + index);
-}
-
-void MapContext::PresentEntireMapAsEvents(IMapContextClientEventListener* listener) {
-    Q_FOREACH(MapNode* node, m_nodes)
-    {
-        Q_FOREACH(IMapContextClientEventListener* listener, m_eventListeners)
-        {
-            listener->OnNodeAdded(node, this);
-        }
-    }
-}
-
 MapNode *MapContext::AddNode(MapNode *parent)
 {
     const bool isRoot = (parent == NULL && m_nodes.empty());
@@ -40,20 +20,14 @@ MapNode *MapContext::AddNode(MapNode *parent)
     m_nodes.push_back(newNode);
     m_parents[newNode] = parent;
     m_childs[parent].push_back(newNode);
-    Q_FOREACH(IMapContextClientEventListener* listener, m_eventListeners)
-    {
-        listener->OnNodeAdded(newNode, this);
-    }
+    emit OnNodeAdded(newNode, this);
     return newNode;
     // TODO: make undo
 }
 
 void MapContext::RemoveNode(MapNode *node)
 {
-    Q_FOREACH(IMapContextClientEventListener* listener, m_eventListeners)
-    {
-        listener->OnNodeDeleted(node, this);
-    }
+    emit OnNodeDeleted(node, this);
 
     m_nodes.removeAll(node);
     MapNode* parent = m_parents[node];
@@ -135,6 +109,9 @@ MapNode *MapContext::GetPrevSibling(MapNode *node)
     return siblings[index - 1];
 }
 
-
+const QVector<MapNode *> MapContext::GetNodes()
+{
+    return m_nodes;
+}
 
 }

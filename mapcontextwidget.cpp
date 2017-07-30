@@ -36,8 +36,14 @@ MapContextWidget::MapContextWidget(QWidget *parent, MindMapRa::MapContext* model
     if (m_context == NULL)
         m_context = new MindMapRa::MapContext;
 
-    m_context->AddEventListener(this);
-    m_context->PresentEntireMapAsEvents(this);
+    connect(m_context, SIGNAL(OnNodeAdded(MindMapRa::MapNode*,MindMapRa::MapContext*)),
+            this,      SLOT(OnNodeAdded(MindMapRa::MapNode*,MindMapRa::MapContext*)));
+    connect(m_context, SIGNAL(OnNodeDeleted(MindMapRa::MapNode*,MindMapRa::MapContext*)),
+            this,      SLOT(OnNodeDeleted(MindMapRa::MapNode*,MindMapRa::MapContext*)));
+
+    const QVector<MindMapRa::MapNode*> nodes = m_context->GetNodes();
+    Q_FOREACH(MindMapRa::MapNode* node, nodes)
+        OnNodeAdded(node, m_context);
 
     m_cursor = new MindMapRa::MapCursor(m_context);
     m_nodeWidgets[ m_cursor->GetNode() ]->SetFocusNode(true);
@@ -74,9 +80,8 @@ void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapConte
 
 }
 
-void MapContextWidget::OnNodeDeleted(MindMapRa::MapNode* node, MindMapRa::MapContext* caller)
+void MapContextWidget::OnNodeDeleted(MindMapRa::MapNode* node, MindMapRa::MapContext*)
 {
-    Q_UNUSED(caller);
     if (m_nodeWidgets.count(node) > 0)
     {
         MapNodeWidget* widget = m_nodeWidgets[node];
@@ -90,8 +95,6 @@ void MapContextWidget::OnNodeDeleted(MindMapRa::MapNode* node, MindMapRa::MapCon
         delete widget;
         m_nodeWidgets.remove(node);
     }
-
-    // TODO: delete path
 
     m_layout->FixAllPositions();
 }
