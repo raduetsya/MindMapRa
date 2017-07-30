@@ -21,6 +21,7 @@ MapContextWidget::MapContextWidget(QWidget *parent, MindMapRa::MapContext* model
     m_nodeView->setDragMode(QGraphicsView::ScrollHandDrag);
     m_nodeView->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
     m_nodeView->setInteractive(true);
+    m_nodeView->setRenderHint(QPainter::Antialiasing, true);
 
     // Layout: maximize to parent window
     QGridLayout* layout = new QGridLayout(this);
@@ -29,8 +30,8 @@ MapContextWidget::MapContextWidget(QWidget *parent, MindMapRa::MapContext* model
     layout->addWidget(m_nodeView);
     setLayout(layout);
 
-    connect(m_layout, SIGNAL(OnElementPosition(ILayoutElement*,QPointF)),
-            this,     SLOT(OnNodePosition(ILayoutElement*,QPointF)));
+    connect(m_layout, SIGNAL(OnElementPosition(QWidget*,QPointF)),
+            this,     SLOT(OnNodePosition(QWidget*,QPointF)));
 
     if (m_context == NULL)
         m_context = new MindMapRa::MapContext;
@@ -155,7 +156,7 @@ void MapContextWidget::OnCursorRemoveNodeRequested()
     m_nodeWidgets[ newNode ]->SetFocusNode(true);
 }
 
-void MapContextWidget::OnNodePosition(ILayoutElement *node, QPointF pos)
+void MapContextWidget::OnNodePosition(QWidget *node, QPointF pos)
 {
     MapNodeWidget* widget = dynamic_cast<MapNodeWidget*>(node);
     widget->move(pos.x(), pos.y());

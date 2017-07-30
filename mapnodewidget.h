@@ -9,9 +9,7 @@ class QPlainTextEdit;
 class QMouseEvent;
 QT_END_NAMESPACE
 
-#include "maplayout.h"
-
-class MapNodeWidget : public QFrame, public ILayoutElement
+class MapNodeWidget : public QFrame
 {
     Q_OBJECT
 public:

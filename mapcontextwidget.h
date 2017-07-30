@@ -31,7 +31,7 @@ public:
     explicit MapContextWidget(QWidget* parent = NULL, MindMapRa::MapContext* model = NULL);
 
 public slots:
-    void OnNodePosition(ILayoutElement* node, QPointF pos);
+    void OnNodePosition(QWidget* node, QPointF pos);
     void OnChangeFocusUserRequest(MapNodeWidget* widget);
     void OnCursorMoveRequested(bool isUp, bool isDown, bool isLeft, bool isRight);
     void OnCursorCreateNodeRequested();

@@ -7,14 +7,6 @@
 #include <QPointF>
 #include <QRectF>
 
-class ILayoutElement
-{
-public:
-    virtual QSizeF ElementSize() = 0;
-
-    virtual ~ILayoutElement() {};
-};
-
 class MapLayout : public QObject
 {
     Q_OBJECT
@@ -24,27 +16,27 @@ public:
 
     void FixAllPositions();
 
-    void Add(ILayoutElement* node, ILayoutElement* parent);
-    void Remove(ILayoutElement* node);
+    void Add(QWidget* node, QWidget* parent);
+    void Remove(QWidget* node);
 
-    QRectF GetPos(ILayoutElement* node);
+    QRectF GetPos(QWidget* node);
 
 signals:
-    void OnElementPosition(ILayoutElement* node, QPointF newPos);
+    void OnElementPosition(QWidget* node, QPointF newPos);
 
 private:
-    int UpdateAndGetNodeSize(ILayoutElement* node, int topPos, int parentLeftPos, QMap<ILayoutElement*, QPointF>& res);
-    void EmitPositionCallbacks(ILayoutElement *node, const QMap<ILayoutElement *, QPointF> &res);
+    int UpdateAndGetNodeSize(QWidget* node, int topPos, int parentLeftPos, QMap<QWidget*, QPointF>& res);
+    void EmitPositionCallbacks(QWidget* node, const QMap<QWidget*, QPointF> &res);
 
     struct Block {
-        ILayoutElement* parent;
-        QVector<ILayoutElement*> nodes;
+        QWidget* parent;
+        QVector<QWidget*> nodes;
         QVector<int> nodeVertPos;
         QPointF pos;
     };
 
-    QMap<ILayoutElement*, Block> m_blocks;
-    QMap<ILayoutElement*, QRectF> m_posCache;
+    QMap<QWidget*, Block> m_blocks;
+    QMap<QWidget*, QRectF> m_posCache;
 };
 
 #endif // MAPLAYOUT_H
