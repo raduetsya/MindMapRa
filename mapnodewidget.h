@@ -31,6 +31,7 @@ signals:
     void OnChangeFocusUserRequest(MapNodeWidget*);
     void OnCursorMoveRequested(bool isUp, bool isDown, bool isLeft, bool isRight);
     void OnCursorCreateNodeRequested();
+    void OnCursorRemoveNodeRequested();
 
 private slots:
     void OnTextChanged();

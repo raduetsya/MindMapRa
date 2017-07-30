@@ -40,6 +40,7 @@ MapContextWidget::MapContextWidget(QWidget *parent, MindMapRa::MapContext* model
     m_context->PresentEntireMapAsEvents(this);
 
     m_cursor = new MindMapRa::MapCursor(m_context);
+    m_nodeWidgets[ m_cursor->GetNode() ]->SetFocusNode(true);
 }
 
 void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapContext* caller)
@@ -56,6 +57,8 @@ void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapConte
                 this,       SLOT(OnCursorMoveRequested(bool,bool,bool,bool)));
         connect(newWidget,  SIGNAL(OnCursorCreateNodeRequested()),
                 this,       SLOT(OnCursorCreateNodeRequested()));
+        connect(newWidget,  SIGNAL(OnCursorRemoveNodeRequested()),
+                this,       SLOT(OnCursorRemoveNodeRequested()));
 
         m_nodeScene->addWidget(newWidget);
         m_nodeWidgets[node] = newWidget;
@@ -73,9 +76,18 @@ void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapConte
 
 void MapContextWidget::OnNodeDeleted(MindMapRa::MapNode* node, MindMapRa::MapContext* caller)
 {
+    Q_UNUSED(caller);
     if (m_nodeWidgets.count(node) > 0)
     {
-        delete m_nodeWidgets[node];
+        MapNodeWidget* widget = m_nodeWidgets[node];
+
+        m_layout->Remove( widget );
+
+        if (m_pathWidgets.contains( widget ))
+            delete m_pathWidgets[widget];
+        m_pathWidgets.remove(widget);
+
+        delete widget;
         m_nodeWidgets.remove(node);
     }
 
@@ -132,6 +144,15 @@ void MapContextWidget::OnCursorCreateNodeRequested()
     m_nodeWidgets[ oldNode ]->SetFocusNode(false);
     m_nodeWidgets[ newNode ]->SetFocusNode(true);
     m_cursor->SetNode(newNode);
+}
+
+void MapContextWidget::OnCursorRemoveNodeRequested()
+{
+    // MindMapRa::MapNode* oldNode = m_cursor->GetNode();
+    m_cursor->DeleteCurrentNode();
+    MindMapRa::MapNode* newNode = m_cursor->GetNode();
+    // m_nodeWidgets[ oldNode ]->SetFocusNode(false);
+    m_nodeWidgets[ newNode ]->SetFocusNode(true);
 }
 
 void MapContextWidget::OnNodePosition(ILayoutElement *node, QPointF pos)

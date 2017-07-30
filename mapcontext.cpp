@@ -56,6 +56,8 @@ void MapContext::RemoveNode(MapNode *node)
     }
 
     m_nodes.removeAll(node);
+    MapNode* parent = m_parents[node];
+    m_childs[parent].removeAll(node);
     m_parents.remove(node);
     if (m_childs.contains(node))
     {
@@ -63,6 +65,7 @@ void MapContext::RemoveNode(MapNode *node)
         {
             RemoveNode(child);
         }
+        m_childs.remove(node);
     }
     // TODO: make undo
 }

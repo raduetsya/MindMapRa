@@ -60,6 +60,9 @@ MindMapRa::MapNode *MindMapRa::MapCursor::CreateChildNode()
 void MindMapRa::MapCursor::DeleteCurrentNode()
 {
     MapNode* parentNode = m_context->GetNodeParent(m_node);
+    if (parentNode == NULL)
+        return;
+
     m_context->RemoveNode(m_node);
     m_node = parentNode;
 }

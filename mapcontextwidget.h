@@ -41,6 +41,7 @@ public slots:
     void OnChangeFocusUserRequest(MapNodeWidget* widget);
     void OnCursorMoveRequested(bool isUp, bool isDown, bool isLeft, bool isRight);
     void OnCursorCreateNodeRequested();
+    void OnCursorRemoveNodeRequested();
 
 private:
     QPainterPath GenPath(MindMapRa::MapNode* parent, MindMapRa::MapNode* child);

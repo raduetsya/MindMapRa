@@ -13,8 +13,6 @@ void MapLayout::Add(ILayoutElement* node, ILayoutElement* parent)
 
 void MapLayout::Remove(ILayoutElement* node)
 {
-    Q_ASSERT(m_blocks.contains(node) == false);
-
     QMapIterator<ILayoutElement*, Block> it(m_blocks);
     while (it.hasNext()) {
         it.next();

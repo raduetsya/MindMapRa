@@ -99,6 +99,8 @@ void MapNodeWidget::keyPressEvent(QKeyEvent *ev)
 {
     if (ev->key() == Qt::Key_Tab)
         emit OnCursorCreateNodeRequested();
+    else if (ev->key() == Qt::Key_Delete)
+        emit OnCursorRemoveNodeRequested();
     else if (ev->key() == Qt::Key_Up || ev->key() == Qt::Key_Down || ev->key() == Qt::Key_Left || ev->key() == Qt::Key_Right)
         emit OnCursorMoveRequested(
                 ev->key() == Qt::Key_Up,
