@@ -84,7 +84,7 @@ void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapConte
 
 void MapContextWidget::OnNodeDeleted(MindMapRa::MapNode* node, MindMapRa::MapContext*)
 {
-    if (m_nodeWidgets.count(node) > 0)
+    if (m_nodeWidgets.contains(node))
     {
         MapNodeWidget* widget = m_nodeWidgets[node];
 
@@ -158,7 +158,7 @@ void MapContextWidget::MoveCursor(bool isUp, bool isDown, bool isLeft, bool isRi
 
     MindMapRa::MapNode* newNode = m_cursor->GetNode();
 
-    if (oldNode != newNode)
+    if (oldNode != newNode && m_nodeWidgets.contains(newNode))
         m_nodeWidgets[ newNode ]->setFocus();
 }
 
@@ -173,7 +173,8 @@ void MapContextWidget::DeleteNodeAtCursor()
 {
     m_cursor->DeleteCurrentNode();
     MindMapRa::MapNode* newNode = m_cursor->GetNode();
-    m_nodeWidgets[ newNode ]->setFocus();
+    if (m_nodeWidgets.contains(newNode))
+        m_nodeWidgets[ newNode ]->setFocus();
 }
 
 void MapContextWidget::OnNodePosition(QWidget *node, QPointF pos)

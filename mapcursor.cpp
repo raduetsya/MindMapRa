@@ -64,7 +64,7 @@ void MindMapRa::MapCursor::DeleteCurrentNode()
         return;
 
     m_context->RemoveNode(m_node);
-    m_node = parentNode;
+    m_node = NULL;
 }
 
 }
