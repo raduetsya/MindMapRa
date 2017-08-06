@@ -16,25 +16,55 @@ public:
 
     void mousePressEvent(QMouseEvent* ev) Q_DECL_OVERRIDE
     {
-        if (!m_parent->IsInFocus())
-            m_parent->mousePressEvent(ev);
+        if (isReadOnly())
+        {
+            ev->ignore();
+            return;
+        }
 
         QPlainTextEdit::mousePressEvent(ev);
     }
 
     void keyPressEvent(QKeyEvent* ev) Q_DECL_OVERRIDE
     {
-        m_parent->keyPressEvent(ev);
-        if (!ev->isAccepted())
+        if (isReadOnly() && ev->key() == Qt::Key_Space) {
+            setReadOnly(false);
+        }
+        else if (!isReadOnly() && ev->key() == Qt::Key_Escape) {
+            setReadOnly(true);
+        }
+        else if (!isReadOnly()) {
             QPlainTextEdit::keyPressEvent(ev);
+        }
+        else {
+            m_parent->keyPressEvent(ev);
+        }
+    }
+
+    bool focusNextPrevChild(bool)
+    {
+        // prevent internal qt logic with tab focus change
+        return false;
+    }
+
+    void focusInEvent(QFocusEvent*)
+    {
+        setStyleSheet("QPlainTextEdit { background-color : #D6B0FF; color : #1D1624; }");
+        setReadOnly(true);
+    }
+
+    void focusOutEvent(QFocusEvent *)
+    {
+        setStyleSheet("QPlainTextEdit { background-color : #FCFFFF; color : #1D1624; }");
+        setReadOnly(true);
     }
 };
 
 MapNodeWidget::MapNodeWidget(QWidget* parent)
     : QFrame(parent)
 {
-    this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    this->setSizeIncrement(10, 10);
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    setSizeIncrement(10, 10);
 
     QGridLayout* layout = new QGridLayout(this);
 
@@ -51,65 +81,32 @@ MapNodeWidget::MapNodeWidget(QWidget* parent)
             this, SLOT(OnTextChanged()));
 
     this->setFrameShape(QFrame::Box);
-    //this->setFrameShadow(QFrame::Raised);
 
-    SetFocusNode(false);
+    clearFocus();
     OnTextChanged();
-}
-
-QSizeF MapNodeWidget::ElementSize()
-{
-    return QSizeF(m_size);
 }
 
 void MapNodeWidget::SetText(const QString &text)
 {
-    Q_UNUSED(text);
     m_label->document()->setPlainText(text);
 }
 
-void MapNodeWidget::SetFocusNode(bool isFocus)
+void MapNodeWidget::mousePressEvent(QMouseEvent *)
 {
-    if (isFocus)
-        setBackgroundRole(QPalette::Button);
-    else
-        setBackgroundRole(QPalette::Dark);
-
-    m_label->setReadOnly(!isFocus);
-    if (isFocus)
-    {
-        this->setFocus();
-        m_label->setFocus();
-    }
-}
-
-
-bool MapNodeWidget::IsInFocus()
-{
-    return !m_label->isReadOnly();
-}
-
-void MapNodeWidget::mousePressEvent(QMouseEvent *ev)
-{
-    Q_UNUSED(ev);
     emit OnChangeFocusUserRequest(this);
 }
 
 void MapNodeWidget::keyPressEvent(QKeyEvent *ev)
 {
-    if (ev->key() == Qt::Key_Tab)
-        emit OnCursorCreateNodeRequested();
-    else if (ev->key() == Qt::Key_Delete)
-        emit OnCursorRemoveNodeRequested();
-    else if (ev->key() == Qt::Key_Up || ev->key() == Qt::Key_Down || ev->key() == Qt::Key_Left || ev->key() == Qt::Key_Right)
-        emit OnCursorMoveRequested(
-                ev->key() == Qt::Key_Up,
-                ev->key() == Qt::Key_Down,
-                ev->key() == Qt::Key_Left,
-                ev->key() == Qt::Key_Right
-                );
-    else
-        QFrame::keyPressEvent(ev);
+    // input keys are processed in label
+    // control keys are processed in parent
+    emit OnKeypress(ev);
+}
+
+void MapNodeWidget::focusInEvent(QFocusEvent*)
+{
+    // focus should be on label
+    m_label->setFocus();
 }
 
 void MapNodeWidget::OnTextChanged()
@@ -135,3 +132,4 @@ void MapNodeWidget::OnTextChanged()
 
     resize(m_size);
 }
+

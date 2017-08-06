@@ -20,9 +20,8 @@ class MapLayout;
 namespace MindMapRa {
 class MapContext;
 class MapCursor;
+class MapNode;
 }
-
-#include "mapcontext.h" // todo: move IMapContextClientEventListener impl to another file, and rename
 
 class MapContextWidget : public QFrame
 {
@@ -30,18 +29,20 @@ class MapContextWidget : public QFrame
 public:
     explicit MapContextWidget(QWidget* parent = NULL, MindMapRa::MapContext* model = NULL);
 
+    void keyPressEvent(QKeyEvent* ev) Q_DECL_OVERRIDE;
+
 public slots:
     void OnNodePosition(QWidget* node, QPointF pos);
-    void OnChangeFocusUserRequest(MapNodeWidget* widget);
-    void OnCursorMoveRequested(bool isUp, bool isDown, bool isLeft, bool isRight);
-    void OnCursorCreateNodeRequested();
-    void OnCursorRemoveNodeRequested();
-
     void OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapContext* caller);
     void OnNodeDeleted(MindMapRa::MapNode* node, MindMapRa::MapContext* caller);
+    void OnChangeFocusUserRequest(MapNodeWidget* widget);
+    void OnNodeKeypress(QKeyEvent* ev);
 
 private:
     QPainterPath GenPath(MindMapRa::MapNode* parent, MindMapRa::MapNode* child);
+    void CreateNodeAtCursor();
+    void DeleteNodeAtCursor();
+    void MoveCursor(bool isUp, bool isDown, bool isLeft, bool isRight);
 
     QGraphicsScene* m_nodeScene;
     MindMapRa::MapContext* m_context;
