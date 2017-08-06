@@ -27,6 +27,7 @@ public:
     MapNode* GetRootNode();
     MapNode* GetNodeParent(MapNode* node);
     MapNode* GetNodeFirstChild(MapNode* parent);
+    MapNode* GetNodeLastChild(MapNode* parent);
     MapNode* GetNextSibling(MapNode* node);
     MapNode* GetPrevSibling(MapNode* node);
 

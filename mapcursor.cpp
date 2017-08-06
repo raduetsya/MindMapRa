@@ -29,10 +29,42 @@ void MindMapRa::MapCursor::MoveCursor(MindMapRa::MapCursor::CursorDirection dir)
 
     switch(dir) {
     case CD_Up:
-        m_node = m_context->GetPrevSibling(m_node);
+        {
+            MapNode* sibling = m_context->GetPrevSibling(m_node);
+            if (!sibling)
+            {
+                MapNode* parent = m_context->GetNodeParent(m_node);
+                MapNode* parentSibl = m_context->GetPrevSibling(parent);
+                MapNode* parentSiblChild = (parentSibl ? m_context->GetNodeLastChild(parentSibl) : NULL);
+                if (parentSiblChild)
+                    m_node = parentSiblChild;
+                else if (parentSibl)
+                    m_node = parentSibl;
+                else
+                    m_node = NULL;
+            }
+            else
+                m_node = sibling;
+        }
         break;
     case CD_Down:
-        m_node = m_context->GetNextSibling(m_node);
+        {
+            MapNode* sibling = m_context->GetNextSibling(m_node);
+            if (!sibling)
+            {
+                MapNode* parent = m_context->GetNodeParent(m_node);
+                MapNode* parentSibl = m_context->GetNextSibling(parent);
+                MapNode* parentSiblChild = (parentSibl ? m_context->GetNodeFirstChild(parentSibl) : NULL);
+                if (parentSiblChild)
+                    m_node = parentSiblChild;
+                else if (parentSibl)
+                    m_node = parentSibl;
+                else
+                    m_node = NULL;
+            }
+            else
+                m_node = sibling;
+        }
         break;
     case CD_Left:
         m_node = m_context->GetNodeParent(m_node);

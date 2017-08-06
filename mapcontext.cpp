@@ -71,6 +71,17 @@ MapNode *MapContext::GetNodeFirstChild(MapNode *parent)
     return m_childs[parent].first();
 }
 
+MapNode *MapContext::GetNodeLastChild(MapNode *parent)
+{
+    if (!m_childs.contains(parent))
+        return NULL;
+
+    if (m_childs[parent].empty())
+        return NULL;
+
+    return m_childs[parent].last();
+}
+
 MapNode *MapContext::GetNextSibling(MapNode *node)
 {
     if (!m_parents.contains(node))
