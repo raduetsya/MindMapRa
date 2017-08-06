@@ -113,11 +113,7 @@ void MapContextWidget::OnChangeFocusUserRequest(MapNodeWidget *widget)
         {
             MindMapRa::MapNode* newNode = it.key();
             if (newNode != oldNode)
-            {
                 m_cursor->SetNode(newNode);
-                m_nodeWidgets[ oldNode ]->clearFocus();
-                m_nodeWidgets[ newNode ]->setFocus();
-            }
             break;
         }
     }
@@ -163,17 +159,12 @@ void MapContextWidget::MoveCursor(bool isUp, bool isDown, bool isLeft, bool isRi
     MindMapRa::MapNode* newNode = m_cursor->GetNode();
 
     if (oldNode != newNode)
-    {
-        m_nodeWidgets[ oldNode ]->clearFocus();
         m_nodeWidgets[ newNode ]->setFocus();
-    }
 }
 
 void MapContextWidget::CreateNodeAtCursor()
 {
-    MindMapRa::MapNode* oldNode = m_cursor->GetNode();
     MindMapRa::MapNode* newNode = m_cursor->CreateChildNode();
-    m_nodeWidgets[ oldNode ]->clearFocus();
     m_nodeWidgets[ newNode ]->setFocus();
     m_cursor->SetNode(newNode);
 }
