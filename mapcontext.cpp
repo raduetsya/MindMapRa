@@ -54,6 +54,9 @@ MapNode *MapContext::GetRootNode()
 
 MapNode *MapContext::GetNodeParent(MapNode *node)
 {
+    if (node == NULL)
+        return NULL;
+
     if (!m_parents.contains(node))
         return NULL;
 
@@ -62,6 +65,9 @@ MapNode *MapContext::GetNodeParent(MapNode *node)
 
 MapNode *MapContext::GetNodeFirstChild(MapNode *parent)
 {
+    if (parent == NULL)
+        return NULL;
+
     if (!m_childs.contains(parent))
         return NULL;
 
@@ -73,6 +79,9 @@ MapNode *MapContext::GetNodeFirstChild(MapNode *parent)
 
 MapNode *MapContext::GetNodeLastChild(MapNode *parent)
 {
+    if (parent == NULL)
+        return NULL;
+
     if (!m_childs.contains(parent))
         return NULL;
 
@@ -84,6 +93,9 @@ MapNode *MapContext::GetNodeLastChild(MapNode *parent)
 
 MapNode *MapContext::GetNextSibling(MapNode *node)
 {
+    if (node == NULL)
+        return NULL;
+
     if (!m_parents.contains(node))
         return NULL;
 
@@ -103,6 +115,9 @@ MapNode *MapContext::GetNextSibling(MapNode *node)
 
 MapNode *MapContext::GetPrevSibling(MapNode *node)
 {
+    if (node == NULL)
+        return NULL;
+
     if (!m_parents.contains(node))
         return NULL;
 

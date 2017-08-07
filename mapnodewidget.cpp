@@ -33,6 +33,10 @@ public:
         else if (!isReadOnly() && ev->key() == Qt::Key_Escape) {
             setReadOnly(true);
         }
+        else if (!isReadOnly() && ev->key() == Qt::Key_Tab) {
+            setReadOnly(true);
+            m_parent->keyPressEvent(ev);
+        }
         else if (!isReadOnly()) {
             QPlainTextEdit::keyPressEvent(ev);
         }
@@ -107,6 +111,12 @@ void MapNodeWidget::focusInEvent(QFocusEvent*)
 {
     // focus should be on label
     m_label->setFocus();
+}
+
+bool MapNodeWidget::focusNextPrevChild(bool)
+{
+    // prevent internal qt logic with tab focus change
+    return false;
 }
 
 void MapNodeWidget::OnTextChanged()

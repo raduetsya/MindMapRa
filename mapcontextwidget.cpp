@@ -56,6 +56,12 @@ void MapContextWidget::keyPressEvent(QKeyEvent *ev)
     OnNodeKeypress(ev);
 }
 
+bool MapContextWidget::focusNextPrevChild(bool)
+{
+    // prevent internal qt logic with tab focus change
+    return false;
+}
+
 void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapContext* caller)
 {
     // create node
@@ -165,6 +171,8 @@ void MapContextWidget::MoveCursor(bool isUp, bool isDown, bool isLeft, bool isRi
 void MapContextWidget::CreateNodeAtCursor()
 {
     MindMapRa::MapNode* newNode = m_cursor->CreateChildNode();
+    if (!newNode)
+        return;
     m_nodeWidgets[ newNode ]->setFocus();
     m_cursor->SetNode(newNode);
 }
@@ -175,6 +183,8 @@ void MapContextWidget::DeleteNodeAtCursor()
     MindMapRa::MapNode* newNode = m_cursor->GetNode();
     if (m_nodeWidgets.contains(newNode))
         m_nodeWidgets[ newNode ]->setFocus();
+    else
+        setFocus();
 }
 
 void MapContextWidget::OnNodePosition(QWidget *node, QPointF pos)

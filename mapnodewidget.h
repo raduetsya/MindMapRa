@@ -20,6 +20,7 @@ public:
     void mousePressEvent(QMouseEvent* ev) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent* ev) Q_DECL_OVERRIDE;
     void focusInEvent(QFocusEvent* ev) Q_DECL_OVERRIDE;
+    bool focusNextPrevChild(bool) Q_DECL_OVERRIDE;
 
 signals:
     void OnChangeFocusUserRequest(MapNodeWidget*);

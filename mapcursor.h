@@ -2,6 +2,7 @@
 #define MAPCURSOR_H
 
 #include <QObject>
+#include <QVector>
 
 namespace MindMapRa {
 
@@ -19,6 +20,8 @@ public:
         CD_Down,
         CD_Left,
         CD_Right,
+
+        CD_Count
     };
 
     void SetNode(MapNode* node);
@@ -33,8 +36,12 @@ signals:
 public slots:
 
 private:
+    MapNode* MoveVertical(MapNode* node, bool isUp);
+
     MapContext* m_context;
     MapNode* m_node;
+
+    QVector<MapNode*> m_dirCache;
 };
 
 }

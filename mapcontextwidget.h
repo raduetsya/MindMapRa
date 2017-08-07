@@ -30,6 +30,7 @@ public:
     explicit MapContextWidget(QWidget* parent = NULL, MindMapRa::MapContext* model = NULL);
 
     void keyPressEvent(QKeyEvent* ev) Q_DECL_OVERRIDE;
+    bool focusNextPrevChild(bool) Q_DECL_OVERRIDE;
 
 public slots:
     void OnNodePosition(QWidget* node, QPointF pos);
