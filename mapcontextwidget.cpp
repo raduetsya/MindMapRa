@@ -22,7 +22,7 @@ MapContextWidget::MapContextWidget(QWidget *parent, MindMapRa::MapContext* model
     m_nodeView->setDragMode(QGraphicsView::ScrollHandDrag);
     m_nodeView->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
     m_nodeView->setInteractive(true);
-    // m_nodeView->setRenderHint(QPainter::Antialiasing, true);
+    m_nodeView->setRenderHint(QPainter::Antialiasing, true);
 
     // Layout: maximize to parent window
     QGridLayout* layout = new QGridLayout(this);
@@ -73,6 +73,8 @@ void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapConte
                 this,       SLOT(OnChangeFocusUserRequest(MapNodeWidget*)));
         connect(newWidget,  SIGNAL(OnKeypress(QKeyEvent*)),
                 this,       SLOT(OnNodeKeypress(QKeyEvent*)));
+        connect(newWidget,  SIGNAL(OnResize(MapNodeWidget*)),
+                this,       SLOT(OnNodeResize(MapNodeWidget*)));
 
         m_nodeScene->addWidget(newWidget);
         m_nodeWidgets[node] = newWidget;
@@ -82,7 +84,8 @@ void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapConte
     {
         MindMapRa::MapNode* parent = caller->GetNodeParent(node);
         MapNodeWidget* parentWidget = (parent ? m_nodeWidgets[parent] : NULL);
-        m_layout->Add(m_nodeWidgets[node], parentWidget);
+        MapNodeWidget* prevSiblingWidget = (m_nodeWidgets.contains(m_context->GetPrevSibling(node)) ? m_nodeWidgets[ m_context->GetPrevSibling(node) ] : NULL);
+        m_layout->Add(m_nodeWidgets[node], parentWidget, prevSiblingWidget);
         m_layout->FixAllPositions();
     }
 
@@ -135,6 +138,9 @@ void MapContextWidget::OnNodeKeypress(QKeyEvent *ev)
     {
         DeleteNodeAtCursor();
     }
+    else if (ev->key() == Qt::Key_Return) {
+        CreateNodeSibling();
+    }
     else if (ev->key() == Qt::Key_Up ||
              ev->key() == Qt::Key_Down ||
              ev->key() == Qt::Key_Left ||
@@ -147,6 +153,11 @@ void MapContextWidget::OnNodeKeypress(QKeyEvent *ev)
             ev->key() == Qt::Key_Right
         );
     }
+}
+
+void MapContextWidget::OnNodeResize(MapNodeWidget *widget)
+{
+    m_layout->FixAllPositions();
 }
 
 void MapContextWidget::MoveCursor(bool isUp, bool isDown, bool isLeft, bool isRight)
@@ -171,6 +182,15 @@ void MapContextWidget::MoveCursor(bool isUp, bool isDown, bool isLeft, bool isRi
 void MapContextWidget::CreateNodeAtCursor()
 {
     MindMapRa::MapNode* newNode = m_cursor->CreateChildNode();
+    if (!newNode)
+        return;
+    m_nodeWidgets[ newNode ]->setFocus();
+    m_cursor->SetNode(newNode);
+}
+
+void MapContextWidget::CreateNodeSibling()
+{
+    MindMapRa::MapNode* newNode = m_cursor->CreateSiblingNode();
     if (!newNode)
         return;
     m_nodeWidgets[ newNode ]->setFocus();

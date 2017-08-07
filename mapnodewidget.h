@@ -28,6 +28,7 @@ signals:
     void OnCursorCreateNodeRequested();
     void OnCursorRemoveNodeRequested();
     void OnKeypress(QKeyEvent* ev);
+    void OnResize(MapNodeWidget*);
 
 private slots:
     void OnTextChanged();

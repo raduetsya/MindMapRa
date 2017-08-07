@@ -10,7 +10,8 @@ public:
     explicit NodeTextEdit(MapNodeWidget *parent = 0)
         : QPlainTextEdit(parent)
         , m_parent(parent)
-    {}
+    {
+    }
 
     MapNodeWidget* m_parent;
 
@@ -29,12 +30,17 @@ public:
     {
         if (isReadOnly() && ev->key() == Qt::Key_Space) {
             setReadOnly(false);
+            selectAll();
         }
         else if (!isReadOnly() && ev->key() == Qt::Key_Escape) {
             setReadOnly(true);
+            moveCursor(QTextCursor::Start);
         }
         else if (!isReadOnly() && ev->key() == Qt::Key_Tab) {
             setReadOnly(true);
+            m_parent->keyPressEvent(ev);
+        }
+        else if (ev->key() == Qt::Key_Return) {
             m_parent->keyPressEvent(ev);
         }
         else if (!isReadOnly()) {
@@ -54,7 +60,7 @@ public:
     void focusInEvent(QFocusEvent*)
     {
         setStyleSheet("QPlainTextEdit { background-color : #D6B0FF; color : #1D1624; }");
-        setReadOnly(true);
+        // setReadOnly(true);
     }
 
     void focusOutEvent(QFocusEvent *)
@@ -141,5 +147,6 @@ void MapNodeWidget::OnTextChanged()
                     qMin(maxSize.height(), textSizeAdd.height()));
 
     resize(m_size);
+    emit OnResize(this);
 }
 
