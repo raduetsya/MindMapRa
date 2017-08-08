@@ -16,7 +16,7 @@ public:
 
     void FixAllPositions();
 
-    void Add(QWidget* node, QWidget* parent, QWidget* addAfter);
+    void Add(QWidget* node, QWidget* parent);
     void Remove(QWidget* node);
 
     QRectF GetPos(QWidget* node);

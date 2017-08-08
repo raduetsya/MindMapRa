@@ -22,7 +22,6 @@ public:
     explicit MapContext();
 
     MapNode* AddNode(MapNode* parent);
-    MapNode* AddNodeAfter(MapNode* after);
     void RemoveNode(MapNode* node);
 
     MapNode* GetRootNode();

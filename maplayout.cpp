@@ -6,14 +6,10 @@ MapLayout::MapLayout(QObject *parent) : QObject(parent)
     m_blocks[NULL] = Block();
 }
 
-void MapLayout::Add(QWidget* node, QWidget* parent, QWidget* addAfter)
+void MapLayout::Add(QWidget* node, QWidget* parent)
 {
     Block& blockFrom = m_blocks[parent];
-    int afterIdx = blockFrom.nodes.indexOf(addAfter);
-    if (afterIdx < 0 || afterIdx >= blockFrom.nodes.size())
-        blockFrom.nodes.push_back(node);
-    else
-        blockFrom.nodes.insert(afterIdx + 1, node);
+    blockFrom.nodes.append(node);
 }
 
 void MapLayout::Remove(QWidget* node)

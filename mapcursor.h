@@ -28,7 +28,6 @@ public:
     MapNode* GetNode();
     void MoveCursor(CursorDirection dir);
     MapNode* CreateChildNode();
-    MapNode* CreateSiblingNode();
     void DeleteCurrentNode();
 
 signals:

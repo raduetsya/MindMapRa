@@ -25,30 +25,6 @@ MapNode *MapContext::AddNode(MapNode *parent)
     // TODO: make undo
 }
 
-MapNode *MapContext::AddNodeAfter(MapNode* after)
-{
-    if (!m_parents.contains(after))
-        return NULL;
-
-    MapNode* parent = m_parents[after];
-    int afterIdx = m_childs[parent].indexOf(after);
-    if (afterIdx < 0)
-        afterIdx = 0;
-
-    const bool isRoot = (parent == NULL && m_nodes.empty());
-    if (!isRoot)
-        Q_ASSERT(m_nodes.contains(parent));
-
-    MapNode* newNode = new MapNode("");
-
-    m_nodes.push_back(newNode);
-    m_parents[newNode] = parent;
-    m_childs[parent].insert(afterIdx + 1, newNode);
-    emit OnNodeAdded(newNode, this);
-    return newNode;
-    // TODO: make undo
-}
-
 void MapContext::RemoveNode(MapNode *node)
 {
     emit OnNodeDeleted(node, this);

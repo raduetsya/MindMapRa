@@ -9,7 +9,6 @@ MapCursor::MapCursor(MapContext* context)
     , m_node(m_context->GetRootNode())
 {
     m_dirCache.resize(CD_Count);
-    m_dirCache.fill(NULL);
 }
 
 
@@ -50,7 +49,7 @@ MapNode* MapCursor::MoveVertical(MapNode* node, bool isUp)
     } else {
         MapNode* cached = (isUp ? m_dirCache[CD_Up] : m_dirCache[CD_Down]);
         if (cached) {
-            m_dirCache.fill(NULL);
+            m_dirCache[CD_Up] = m_dirCache[CD_Down] = m_dirCache[CD_Left] = m_dirCache[CD_Right] = NULL;
             return cached;
         }
     }
@@ -75,7 +74,7 @@ void MindMapRa::MapCursor::MoveCursor(MindMapRa::MapCursor::CursorDirection dir)
                 m_node = m_context->GetNodeParent(m_node);
             else {
                 m_node = m_dirCache[CD_Left];
-                m_dirCache.fill(NULL);
+                m_dirCache[CD_Up] = m_dirCache[CD_Down] = m_dirCache[CD_Left] = m_dirCache[CD_Right] = NULL;
             }
         }
         break;
@@ -99,15 +98,6 @@ MindMapRa::MapNode *MindMapRa::MapCursor::CreateChildNode()
         return NULL;
 
     MapNode* newNode = m_context->AddNode(m_node);
-    return newNode;
-}
-
-MapNode *MapCursor::CreateSiblingNode()
-{
-    if (!m_node)
-        return NULL;
-
-    MapNode* newNode = m_context->AddNodeAfter(m_node);
     return newNode;
 }
 
