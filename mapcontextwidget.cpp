@@ -73,6 +73,8 @@ void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapConte
                 this,       SLOT(OnChangeFocusUserRequest(MapNodeWidget*)));
         connect(newWidget,  SIGNAL(OnKeypress(QKeyEvent*)),
                 this,       SLOT(OnNodeKeypress(QKeyEvent*)));
+        connect(newWidget,  SIGNAL(OnWidgetResize(QWidget*,QSize)),
+                this,       SLOT(OnNodeResize(QWidget*,QSize)));
 
         m_nodeScene->addWidget(newWidget);
         m_nodeWidgets[node] = newWidget;
@@ -152,6 +154,11 @@ void MapContextWidget::OnNodeKeypress(QKeyEvent *ev)
         MindMapRa::MapNode* curNode = m_cursor->GetNode();
         FoldNode( curNode, !m_nodesFolded.contains(curNode) );
     }
+}
+
+void MapContextWidget::OnNodeResize(QWidget *, QSize)
+{
+    m_layout->FixAllPositions();
 }
 
 void MapContextWidget::MoveCursor(bool isUp, bool isDown, bool isLeft, bool isRight)

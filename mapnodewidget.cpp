@@ -174,5 +174,6 @@ void MapNodeWidget::OnTextChanged()
                     qMin(maxSize.height(), textSizeAdd.height()));
 
     resize(m_size);
+    emit OnWidgetResize(this, m_size);
 }
 

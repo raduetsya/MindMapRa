@@ -31,6 +31,7 @@ signals:
     void OnCursorCreateNodeRequested();
     void OnCursorRemoveNodeRequested();
     void OnKeypress(QKeyEvent* ev);
+    void OnWidgetResize(QWidget* widget, QSize newSize);
 
 private slots:
     void OnTextChanged();

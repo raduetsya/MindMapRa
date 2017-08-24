@@ -38,6 +38,7 @@ public slots:
     void OnNodeDeleted(MindMapRa::MapNode* node, MindMapRa::MapContext* caller);
     void OnChangeFocusUserRequest(MapNodeWidget* widget);
     void OnNodeKeypress(QKeyEvent* ev);
+    void OnNodeResize(QWidget* node, QSize newSize);
 
 private:
     QPainterPath GenPath(MindMapRa::MapNode* parent, MindMapRa::MapNode* child);
