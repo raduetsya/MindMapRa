@@ -74,8 +74,10 @@ MapNodeWidget::MapNodeWidget(QWidget* parent)
 
     QGridLayout* layout = new QGridLayout(this);
 
+    QString addrStr = QString("0x%1").arg((size_t)this,sizeof(size_t)*2,16,QLatin1Char('0'));
+
     m_label = new NodeTextEdit(this);
-    m_label->setPlaceholderText("Press SPACE to EDIT");
+    m_label->setPlaceholderText(addrStr);
     m_label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     m_label->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_label->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
