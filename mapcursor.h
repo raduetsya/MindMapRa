@@ -11,7 +11,8 @@ class MapNode;
 
 class MapCursor : public QObject
 {
-    Q_OBJECT;
+    Q_OBJECT
+
 public:
     MapCursor(MapContext* context);
 

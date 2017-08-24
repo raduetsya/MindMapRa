@@ -12,7 +12,7 @@ class MapContext;
 
 class MapContext : public QObject
 {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
     explicit MapContext();

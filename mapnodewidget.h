@@ -12,6 +12,7 @@ QT_END_NAMESPACE
 class MapNodeWidget : public QFrame
 {
     Q_OBJECT
+
 public:
     explicit MapNodeWidget(QWidget* parent = NULL);
 

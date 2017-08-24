@@ -26,6 +26,7 @@ class MapNode;
 class MapContextWidget : public QFrame
 {
     Q_OBJECT
+
 public:
     explicit MapContextWidget(QWidget* parent = NULL, MindMapRa::MapContext* model = NULL);
 
