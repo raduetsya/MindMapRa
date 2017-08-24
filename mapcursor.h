@@ -2,7 +2,7 @@
 #define MAPCURSOR_H
 
 #include <QObject>
-#include <QVector>
+#include <QMap>
 
 namespace MindMapRa {
 
@@ -38,11 +38,16 @@ public slots:
 
 private:
     MapNode* MoveVertical(MapNode* node, bool isUp);
+    MapNode* GetCached(MapNode* node, CursorDirection cd);
+    void AddCached(MapNode* nodeFrom, CursorDirection cd, MapNode* cachedTo);
+    void ClearCached(MapNode* node);
+    void UpdateCurNodeCache(MapNode** cache, MapNode* curNode);
 
     MapContext* m_context;
     MapNode* m_node;
 
-    QVector<MapNode*> m_dirCache;
+    QMap< QPair<MapNode*, CursorDirection>, MapNode* > m_dirCache;
+    MapNode* m_curNodeCache[CD_Count];
 };
 
 }
