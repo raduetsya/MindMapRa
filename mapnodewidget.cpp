@@ -7,13 +7,11 @@
 class NodeTextEdit : public QPlainTextEdit
 {
     MapNodeWidget* m_parent;
-    bool m_isFolded;
 
 public:
     explicit NodeTextEdit(MapNodeWidget *parent = 0)
         : QPlainTextEdit(parent)
         , m_parent(parent)
-        , m_isFolded(false)
     {}
 
     void mousePressEvent(QMouseEvent* ev) Q_DECL_OVERRIDE
@@ -68,6 +66,7 @@ public:
 
 MapNodeWidget::MapNodeWidget(QWidget* parent)
     : QFrame(parent)
+    , m_isFolded(false)
 {
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     setSizeIncrement(10, 10);
