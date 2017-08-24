@@ -6,13 +6,15 @@
 
 class NodeTextEdit : public QPlainTextEdit
 {
+    MapNodeWidget* m_parent;
+    bool m_isFolded;
+
 public:
     explicit NodeTextEdit(MapNodeWidget *parent = 0)
         : QPlainTextEdit(parent)
         , m_parent(parent)
+        , m_isFolded(false)
     {}
-
-    MapNodeWidget* m_parent;
 
     void mousePressEvent(QMouseEvent* ev) Q_DECL_OVERRIDE
     {
@@ -45,22 +47,22 @@ public:
         }
     }
 
-    bool focusNextPrevChild(bool)
+    bool focusNextPrevChild(bool) Q_DECL_OVERRIDE
     {
         // prevent internal qt logic with tab focus change
         return false;
     }
 
-    void focusInEvent(QFocusEvent*)
+    void focusInEvent(QFocusEvent*) Q_DECL_OVERRIDE
     {
-        setStyleSheet("QPlainTextEdit { background-color : #D6B0FF; color : #1D1624; }");
         setReadOnly(true);
+        m_parent->OnTextareaFocusChange(true);
     }
 
-    void focusOutEvent(QFocusEvent *)
+    void focusOutEvent(QFocusEvent *) Q_DECL_OVERRIDE
     {
-        setStyleSheet("QPlainTextEdit { background-color : #FCFFFF; color : #1D1624; }");
         setReadOnly(true);
+        m_parent->OnTextareaFocusChange(false);
     }
 };
 
@@ -95,6 +97,12 @@ void MapNodeWidget::SetText(const QString &text)
     m_label->document()->setPlainText(text);
 }
 
+void MapNodeWidget::SetFolded(bool isFolded)
+{
+    m_isFolded = isFolded;
+    UpdateTextareaStyle();
+}
+
 void MapNodeWidget::mousePressEvent(QMouseEvent *)
 {
     emit OnChangeFocusUserRequest(this);
@@ -118,6 +126,31 @@ bool MapNodeWidget::focusNextPrevChild(bool)
     // prevent internal qt logic with tab focus change
     return false;
 }
+
+void MapNodeWidget::OnTextareaFocusChange(bool hasFocus)
+{
+    Q_UNUSED(hasFocus);
+    UpdateTextareaStyle();
+}
+
+void MapNodeWidget::UpdateTextareaStyle()
+{
+    if (m_label->hasFocus())
+    {
+        if (!m_isFolded)
+            m_label->setStyleSheet("QPlainTextEdit { background-color : #D6B0FF; color : #1D1624; }");
+        else
+            m_label->setStyleSheet("QPlainTextEdit { background-color : #7c7385; color : #1D1624; }");
+    }
+    else
+    {
+        if (!m_isFolded)
+            m_label->setStyleSheet("QPlainTextEdit { background-color : #FCFFFF; color : #1D1624; }");
+        else
+            m_label->setStyleSheet("QPlainTextEdit { background-color : #7ac483; color : #1f1f1b; }");
+    }
+}
+
 
 void MapNodeWidget::OnTextChanged()
 {

@@ -135,7 +135,7 @@ MapNode *MapContext::GetPrevSibling(MapNode *node)
     return siblings[index - 1];
 }
 
-const QVector<MapNode *> MapContext::GetNodes()
+const QVector<MapNode *>& MapContext::GetNodes()
 {
     return m_nodes;
 }

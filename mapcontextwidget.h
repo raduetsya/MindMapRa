@@ -44,6 +44,8 @@ private:
     void CreateNodeAtCursor();
     void DeleteNodeAtCursor();
     void MoveCursor(bool isUp, bool isDown, bool isLeft, bool isRight);
+    void FoldNode(MindMapRa::MapNode* root, bool isFold);
+    void UnfoldNode(MindMapRa::MapNode* root);
 
     QGraphicsScene* m_nodeScene;
     MindMapRa::MapContext* m_context;
@@ -54,6 +56,7 @@ private:
 
     QMap<MindMapRa::MapNode*, MapNodeWidget*> m_nodeWidgets;
     QMap<MapNodeWidget*, QGraphicsPathItem*> m_pathWidgets;
+    QSet<MindMapRa::MapNode*> m_nodesFolded;
 };
 
 #endif // MAPCONTEXTWIDGET_H

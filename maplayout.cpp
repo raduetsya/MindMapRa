@@ -42,6 +42,9 @@ void MapLayout::FixAllPositions()
 
 void MapLayout::EmitPositionCallbacks(QWidget* node, const QMap<QWidget*, QPointF>& res)
 {
+    if (!node->isVisible())
+        return;
+
     QMap<QWidget*, Block>::iterator blockIt = m_blocks.find(node);
 
     if (res.contains(node))
@@ -68,10 +71,16 @@ int MapLayout::UpdateAndGetNodeSize(QWidget* node, int topPos, int parentLeftPos
         int childrenSize = 0;
 
         for(int childIdx = 0; childIdx < block.nodes.size(); ++childIdx) {
+            if (!block.nodes[childIdx]->isVisible())
+                continue;
+
             const int childTop = topPos + childrenSize;
             const int childSize = UpdateAndGetNodeSize(block.nodes[childIdx], childTop, childLeftPos, res);
             childrenSize += childSize;
         }
+
+        if (childrenSize < node->geometry().height())
+            childrenSize = node->geometry().height();
 
         newPos = QPointF(parentLeftPos, topPos + childrenSize/2);
         block.pos = QPointF(childLeftPos, topPos);
@@ -84,7 +93,7 @@ int MapLayout::UpdateAndGetNodeSize(QWidget* node, int topPos, int parentLeftPos
         newPos = QPointF(parentLeftPos, topPos + size/2);
     }
 
-    const int minimumBlockSize = 20;
+    const int minimumBlockSize = 3;
     // if it hasnt children
     if (size < minimumBlockSize)
         size = minimumBlockSize;

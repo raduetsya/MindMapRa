@@ -16,11 +16,14 @@ public:
     explicit MapNodeWidget(QWidget* parent = NULL);
 
     void SetText(const QString& text);
+    void SetFolded(bool isFolded);
 
     void mousePressEvent(QMouseEvent* ev) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent* ev) Q_DECL_OVERRIDE;
     void focusInEvent(QFocusEvent* ev) Q_DECL_OVERRIDE;
     bool focusNextPrevChild(bool) Q_DECL_OVERRIDE;
+
+    void OnTextareaFocusChange(bool hasFocus);
 
 signals:
     void OnChangeFocusUserRequest(MapNodeWidget*);
@@ -33,8 +36,11 @@ private slots:
     void OnTextChanged();
 
 private:
+    void UpdateTextareaStyle();
+
     QPlainTextEdit* m_label;
     QSize m_size;
+    bool m_isFolded;
 };
 
 #endif // MAPNODEWIDGET_H

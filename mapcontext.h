@@ -10,10 +10,6 @@ namespace MindMapRa {
 class MapNode;
 class MapContext;
 
-/*
- * Facade for all node storage/interaction
- * Works with visible nodes
- */
 class MapContext : public QObject
 {
     Q_OBJECT;
@@ -31,7 +27,7 @@ public:
     MapNode* GetNextSibling(MapNode* node);
     MapNode* GetPrevSibling(MapNode* node);
 
-    const QVector<MapNode*> GetNodes();
+    const QVector<MapNode*>& GetNodes();
 
 signals:
     void OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapContext* caller);

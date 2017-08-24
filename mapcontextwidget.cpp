@@ -147,6 +147,11 @@ void MapContextWidget::OnNodeKeypress(QKeyEvent *ev)
             ev->key() == Qt::Key_Right
         );
     }
+    else if (ev->key() == Qt::Key_F)
+    {
+        MindMapRa::MapNode* curNode = m_cursor->GetNode();
+        FoldNode( curNode, !m_nodesFolded.contains(curNode) );
+    }
 }
 
 void MapContextWidget::MoveCursor(bool isUp, bool isDown, bool isLeft, bool isRight)
@@ -165,11 +170,111 @@ void MapContextWidget::MoveCursor(bool isUp, bool isDown, bool isLeft, bool isRi
     MindMapRa::MapNode* newNode = m_cursor->GetNode();
 
     if (oldNode != newNode && m_nodeWidgets.contains(newNode))
+    {
+        if (!m_nodeWidgets[newNode]->isVisible())
+            UnfoldNode(newNode);
+
         m_nodeWidgets[ newNode ]->setFocus();
+    }
+}
+
+void MapContextWidget::UnfoldNode(MindMapRa::MapNode* root)
+{
+    do
+    {
+        if (root == m_context->GetRootNode())
+            break;
+
+        root = m_context->GetNodeParent(root);
+    } while(!m_nodesFolded.contains(root));
+
+    FoldNode(root, false);
+}
+
+void MapContextWidget::FoldNode(MindMapRa::MapNode* root, bool isFold)
+{
+    if (root == NULL)
+        return;
+
+    MindMapRa::MapNode* itNode = root;
+
+    bool foldedAtLeastOneNode = false;
+    bool goBack = false;
+    do
+    {
+        const bool isFoldedChild = m_nodesFolded.contains(itNode) && itNode != root;
+
+        // Advance
+        if (!goBack)
+        {
+            MindMapRa::MapNode* tryNode = NULL;
+
+            if (!isFoldedChild)
+                tryNode = m_context->GetNodeFirstChild(itNode);
+
+            if (tryNode == NULL && itNode != root)
+                tryNode = m_context->GetNextSibling(itNode);
+
+            if (tryNode == NULL)
+                goBack = true;
+            else
+                itNode = tryNode;
+        }
+
+        // Returned to beginning, quit
+        if (goBack && itNode == root)
+            break;
+
+        // Return to parent
+        if (goBack)
+        {
+            itNode = m_context->GetNodeParent(itNode);
+
+            Q_ASSERT(itNode != NULL);
+
+            if (itNode == root)
+                break;
+
+            MindMapRa::MapNode* parentSibling = m_context->GetNextSibling(itNode);
+            if (parentSibling)
+            {
+                itNode = parentSibling;
+                goBack = false;
+            }
+            else
+                continue;
+        }
+
+        // Process: hide or show
+        if (m_nodeWidgets.contains(itNode))
+        {
+            MapNodeWidget* w = m_nodeWidgets[itNode];
+            w->setVisible( !isFold );
+
+            if (m_pathWidgets.contains(w))
+                m_pathWidgets[w]->setVisible( !isFold );
+
+            foldedAtLeastOneNode = true;
+        }
+    } while(true);
+
+    if (foldedAtLeastOneNode)
+    {
+        if (isFold)
+            m_nodesFolded.insert(root);
+        else
+            m_nodesFolded.remove(root);
+
+        m_nodeWidgets[root]->SetFolded(isFold);
+
+        m_layout->FixAllPositions();
+    }
 }
 
 void MapContextWidget::CreateNodeAtCursor()
 {
+    FoldNode(m_cursor->GetNode(), false);
+
     MindMapRa::MapNode* newNode = m_cursor->CreateChildNode();
     if (!newNode)
         return;
