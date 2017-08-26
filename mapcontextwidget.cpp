@@ -64,12 +64,16 @@ bool MapContextWidget::focusNextPrevChild(bool)
     return false;
 }
 
+MindMapRa::MapContext *MapContextWidget::GetMapContext()
+{
+    return m_context;
+}
+
 void MapContextWidget::OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapContext* caller)
 {
     // create node
     {
-        MapNodeWidget* newWidget = new MapNodeWidget(NULL);
-        newWidget->SetText( node->GetText() );
+        MapNodeWidget* newWidget = new MapNodeWidget(node, NULL);
 
         connect(newWidget,  SIGNAL(OnChangeFocusUserRequest(MapNodeWidget*)),
                 this,       SLOT(OnChangeFocusUserRequest(MapNodeWidget*)));

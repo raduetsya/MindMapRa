@@ -9,12 +9,16 @@ class QPlainTextEdit;
 class QMouseEvent;
 QT_END_NAMESPACE
 
+namespace MindMapRa {
+    class MapNode;
+}
+
 class MapNodeWidget : public QFrame
 {
     Q_OBJECT
 
 public:
-    explicit MapNodeWidget(QWidget* parent = NULL);
+    explicit MapNodeWidget(MindMapRa::MapNode* node, QWidget* parent = NULL);
 
     void SetText(const QString& text);
     void SetFolded(bool isFolded);
@@ -43,6 +47,7 @@ private:
     QPlainTextEdit* m_label;
     QSize m_size;
     bool m_isFolded;
+    MindMapRa::MapNode* m_node;
 };
 
 #endif // MAPNODEWIDGET_H

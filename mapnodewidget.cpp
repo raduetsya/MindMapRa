@@ -1,4 +1,5 @@
 #include "mapnodewidget.h"
+#include "mapnode.h"
 
 #include <QTextEdit>
 #include <QGridLayout>
@@ -64,9 +65,10 @@ public:
     }
 };
 
-MapNodeWidget::MapNodeWidget(QWidget* parent)
+MapNodeWidget::MapNodeWidget(MindMapRa::MapNode* node, QWidget* parent)
     : QFrame(parent)
     , m_isFolded(false)
+    , m_node(node)
 {
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     setSizeIncrement(10, 10);
@@ -81,6 +83,7 @@ MapNodeWidget::MapNodeWidget(QWidget* parent)
     m_label->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_label->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_label->setReadOnly(true);
+    m_label->document()->setPlainText(m_node->GetText());
     layout->addWidget(m_label);
     layout->setMargin(0);
 
@@ -155,11 +158,14 @@ void MapNodeWidget::UpdateTextareaStyle()
 
 void MapNodeWidget::OnTextChanged()
 {
+    const QString dataText = m_label->document()->toPlainText();
+
+    m_node->SetText(dataText);
+
     const QFontMetrics fm(m_label->font());
     const QSize addSize(15, 10);
     const QSize maxSize(300, 60);
 
-    const QString dataText = m_label->document()->toPlainText();
     const QString placeholderText = m_label->placeholderText();
     const QString text = ((dataText.size() == 0) ? placeholderText : dataText);
     const QRect textRect = fm.boundingRect(

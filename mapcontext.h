@@ -30,6 +30,8 @@ public:
 
     const QVector<MapNode*>& GetNodes();
 
+    QJsonObject GetJson(MapNode* node = NULL);
+
 signals:
     void OnNodeAdded(MindMapRa::MapNode* node, MindMapRa::MapContext* caller);
     void OnNodeDeleted(MindMapRa::MapNode* node, MindMapRa::MapContext* caller);

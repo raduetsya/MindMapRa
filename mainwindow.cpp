@@ -44,4 +44,26 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    MindMapRa::MapContext* m_context = m_mainWidget->GetMapContext();
+    QJsonDocument doc;
+    {
+        QJsonObject dataJsonObj = m_context->GetJson();
+        QJsonObject rootJsonObj;
+        rootJsonObj["formatVersion"] = QJsonValue(3);
+        rootJsonObj["id"] = QJsonValue("root");
+        rootJsonObj["title"] = QJsonValue(dataJsonObj["title"].toString(""));
+        rootJsonObj["ideas"] = QJsonObject();
+        QJsonObject ideasRoot;
+        ideasRoot["1"] = dataJsonObj;
+        rootJsonObj["ideas"] = ideasRoot;
+        doc.setObject(rootJsonObj);
+    }
+
+    QFile saveFile(TEST_MUPNAME);
+    if (saveFile.open(QIODevice::WriteOnly)) {
+        QByteArray dataBytes = doc.toJson();
+        saveFile.write(dataBytes);
+    } else {
+        qWarning("cannot write to file");
+    }
 }

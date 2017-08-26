@@ -148,6 +148,26 @@ const QVector<MapNode *>& MapContext::GetNodes()
     return m_nodes;
 }
 
+QJsonObject MapContext::GetJson(MapNode* node)
+{
+    if (node == NULL)
+        node = m_nodes.front();
+
+    QJsonObject res;
+    res["title"] = QJsonValue(node->GetText());
+    res["id"] = m_nodes.indexOf(node) + 1;
+    QJsonObject ideas;
+    if (m_childs.contains(node)) {
+        int idx = 1;
+        Q_FOREACH(MapNode* child, m_childs[node]) {
+            ideas[ QString("%1").arg(idx++) ] = GetJson(child);
+        }
+        res["ideas"] = ideas;
+    }
+
+    return res;
+}
+
 void MapContext::Deserialize(const QJsonObject &json, MapNode* node)
 {
     const QString title = json["title"].toString("");
