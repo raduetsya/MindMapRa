@@ -2,12 +2,20 @@
 #include "mapnode.h"
 
 #include <QMap>
+#include <QJsonObject>
+#include <QJsonArray>
 
 namespace MindMapRa {
 
 MapContext::MapContext()
 {
     AddNode(NULL);
+}
+
+MapContext::MapContext(const QJsonObject &json)
+{
+    MapNode* root = AddNode(NULL);
+    Deserialize(json, root);
 }
 
 MapNode *MapContext::AddNode(MapNode *parent)
@@ -138,6 +146,18 @@ MapNode *MapContext::GetPrevSibling(MapNode *node)
 const QVector<MapNode *>& MapContext::GetNodes()
 {
     return m_nodes;
+}
+
+void MapContext::Deserialize(const QJsonObject &json, MapNode* node)
+{
+    const QString title = json["title"].toString("");
+    node->SetText(title);
+
+    QJsonObject childs = json["ideas"].toObject();
+    Q_FOREACH(QString key, childs.keys()) {
+        MapNode* newNode = AddNode(node);
+        Deserialize(childs[key].toObject(), newNode);
+    }
 }
 
 }

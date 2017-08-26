@@ -13,6 +13,7 @@ public:
     {}
 
     QString GetText() const { return m_text; }
+    void SetText(const QString& text) { m_text = text; }
 
 private:
     QString m_text;

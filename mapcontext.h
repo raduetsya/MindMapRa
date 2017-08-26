@@ -15,7 +15,8 @@ class MapContext : public QObject
     Q_OBJECT
 
 public:
-    explicit MapContext();
+    MapContext();
+    MapContext(const QJsonObject& json);
 
     MapNode* AddNode(MapNode* parent);
     void RemoveNode(MapNode* node);
@@ -34,6 +35,8 @@ signals:
     void OnNodeDeleted(MindMapRa::MapNode* node, MindMapRa::MapContext* caller);
 
 private:
+    void Deserialize(const QJsonObject &json, MapNode* node);
+
     QVector<MapNode*> m_nodes;
     QMap<MapNode*, MapNode*> m_parents;
     QMap<MapNode*, QVector<MapNode*> > m_childs;
