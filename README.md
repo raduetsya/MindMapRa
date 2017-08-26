@@ -10,8 +10,8 @@ License of MindMapRa is LGPL. Made with Qt4.
 
 ### Build
 ```sh
-mkdir build
+mkdir build && cd build
 qmake ../src/mindmapra.pro
 make
-cp mindmapra .. && cd .. & ./mindmapra
+cp mindmapra .. && cd .. && ./mindmapra
 ```
