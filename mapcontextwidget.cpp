@@ -49,13 +49,16 @@ MapContextWidget::MapContextWidget(QWidget *parent, MindMapRa::MapContext* model
         OnNodeAdded(node, m_context);
 
     m_cursor = new MindMapRa::MapCursor(m_context);
-    m_nodeWidgets[ m_cursor->GetNode() ]->setFocus();
-    m_nodeView->centerOn( m_nodeWidgets[m_cursor->GetNode()]->pos() );
+    FocusOnNode(m_cursor->GetNode());
 }
 
 void MapContextWidget::keyPressEvent(QKeyEvent *ev)
 {
-    OnNodeKeypress(ev);
+    // Q_ASSERT(m_cursor->GetNode() == NULL);
+    if(m_cursor->GetNode() != NULL)
+        m_nodeWidgets[ m_cursor->GetNode() ]->OnKeypress(ev);
+    else
+        OnNodeKeypress(ev);
 }
 
 bool MapContextWidget::focusNextPrevChild(bool)
@@ -187,8 +190,7 @@ void MapContextWidget::MoveCursor(bool isUp, bool isDown, bool isLeft, bool isRi
         if (!m_nodeWidgets[newNode]->isVisible())
             UnfoldNode(newNode);
 
-        m_nodeWidgets[ newNode ]->setFocus();
-        m_nodeView->centerOn( m_nodeWidgets[newNode]->pos() );
+        FocusOnNode(newNode);
     }
 }
 
@@ -203,6 +205,16 @@ void MapContextWidget::UnfoldNode(MindMapRa::MapNode* root)
     } while(!m_nodesFolded.contains(root));
 
     FoldNode(root, false);
+}
+
+void MapContextWidget::FocusOnNode(MindMapRa::MapNode *node)
+{
+    if (node == NULL) {
+        setFocus();
+    } else {
+        m_nodeView->centerOn( m_nodeWidgets[node]->pos() );
+        m_nodeWidgets[ node ]->setFocus();
+    }
 }
 
 void MapContextWidget::FoldNode(MindMapRa::MapNode* root, bool isFold)
@@ -292,9 +304,8 @@ void MapContextWidget::CreateNodeAtCursor()
     MindMapRa::MapNode* newNode = m_cursor->CreateChildNode();
     if (!newNode)
         return;
-    m_nodeWidgets[ newNode ]->setFocus();
     m_cursor->SetNode(newNode);
-    m_nodeView->centerOn( m_nodeWidgets[newNode]->pos() );
+    FocusOnNode(newNode);
 }
 
 void MapContextWidget::DeleteNodeAtCursor()
@@ -303,11 +314,10 @@ void MapContextWidget::DeleteNodeAtCursor()
     MindMapRa::MapNode* newNode = m_cursor->GetNode();
     if (m_nodeWidgets.contains(newNode))
     {
-        m_nodeWidgets[ newNode ]->setFocus();
-        m_nodeView->centerOn( m_nodeWidgets[newNode]->pos() );
+        FocusOnNode(newNode);
     }
     else
-        setFocus();
+        FocusOnNode(NULL);
 }
 
 void MapContextWidget::OnNodePosition(QWidget *node, QPointF pos)

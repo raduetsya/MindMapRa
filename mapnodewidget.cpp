@@ -28,6 +28,8 @@ public:
 
     void keyPressEvent(QKeyEvent* ev) Q_DECL_OVERRIDE
     {
+        update();
+
         if (isReadOnly() && ev->key() == Qt::Key_Space) {
             setReadOnly(false);
         }
@@ -38,7 +40,7 @@ public:
             setReadOnly(true);
             m_parent->keyPressEvent(ev);
         }
-        else if (!isReadOnly() && ev->key() == Qt::Key_Return && (ev->modifiers() & Qt::AltModifier) == 0) {
+        else if (!isReadOnly() && ev->key() == Qt::Key_Return && (ev->modifiers() & Qt::ShiftModifier) == 0) {
             setReadOnly(true);
             m_parent->keyPressEvent(ev);
         }
@@ -76,6 +78,7 @@ MapNodeWidget::MapNodeWidget(MindMapRa::MapNode* node, QWidget* parent)
 {
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     setSizeIncrement(10, 10);
+    setFocusPolicy(Qt::ClickFocus);
 
     QGridLayout* layout = new QGridLayout(this);
 
@@ -87,6 +90,7 @@ MapNodeWidget::MapNodeWidget(MindMapRa::MapNode* node, QWidget* parent)
     m_label->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_label->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_label->setReadOnly(true);
+    m_label->setFocusPolicy(Qt::ClickFocus);
     m_label->document()->setPlainText(m_node->GetText());
     layout->addWidget(m_label);
     layout->setMargin(0);

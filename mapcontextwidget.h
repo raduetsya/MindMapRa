@@ -50,6 +50,7 @@ private:
     void MoveCursor(bool isUp, bool isDown, bool isLeft, bool isRight);
     void FoldNode(MindMapRa::MapNode* root, bool isFold);
     void UnfoldNode(MindMapRa::MapNode* root);
+    void FocusOnNode(MindMapRa::MapNode *node);
 
     QGraphicsScene* m_nodeScene;
     MindMapRa::MapContext* m_context;
