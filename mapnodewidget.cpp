@@ -38,6 +38,10 @@ public:
             setReadOnly(true);
             m_parent->keyPressEvent(ev);
         }
+        else if (!isReadOnly() && ev->key() == Qt::Key_Return && (ev->modifiers() & Qt::AltModifier) == 0) {
+            setReadOnly(true);
+            m_parent->keyPressEvent(ev);
+        }
         else if (!isReadOnly()) {
             QPlainTextEdit::keyPressEvent(ev);
         }
