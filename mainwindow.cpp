@@ -7,10 +7,11 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QDir>
 
 const QString APP_NAME = "MindMapRa";
 
-const QString TEST_MUPNAME = "/home/raduetsya/mindmap.mup";
+const QString TEST_MUPNAME = QDir::homePath() + "/mindmap.mup";
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
