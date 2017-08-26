@@ -35,6 +35,7 @@ MapContextWidget::MapContextWidget(QWidget *parent, MindMapRa::MapContext* model
             this,     SLOT(OnNodePosition(QWidget*,QPointF)));
 
     // Context: mindmap node storage
+    Q_ASSERT(m_context != NULL);
     if (m_context == NULL)
         m_context = new MindMapRa::MapContext;
 
@@ -49,6 +50,7 @@ MapContextWidget::MapContextWidget(QWidget *parent, MindMapRa::MapContext* model
 
     m_cursor = new MindMapRa::MapCursor(m_context);
     m_nodeWidgets[ m_cursor->GetNode() ]->setFocus();
+    m_nodeView->centerOn( m_nodeWidgets[m_cursor->GetNode()]->pos() );
 }
 
 void MapContextWidget::keyPressEvent(QKeyEvent *ev)
@@ -182,6 +184,7 @@ void MapContextWidget::MoveCursor(bool isUp, bool isDown, bool isLeft, bool isRi
             UnfoldNode(newNode);
 
         m_nodeWidgets[ newNode ]->setFocus();
+        m_nodeView->centerOn( m_nodeWidgets[newNode]->pos() );
     }
 }
 
@@ -287,6 +290,7 @@ void MapContextWidget::CreateNodeAtCursor()
         return;
     m_nodeWidgets[ newNode ]->setFocus();
     m_cursor->SetNode(newNode);
+    m_nodeView->centerOn( m_nodeWidgets[newNode]->pos() );
 }
 
 void MapContextWidget::DeleteNodeAtCursor()
@@ -294,7 +298,10 @@ void MapContextWidget::DeleteNodeAtCursor()
     m_cursor->DeleteCurrentNode();
     MindMapRa::MapNode* newNode = m_cursor->GetNode();
     if (m_nodeWidgets.contains(newNode))
+    {
         m_nodeWidgets[ newNode ]->setFocus();
+        m_nodeView->centerOn( m_nodeWidgets[newNode]->pos() );
+    }
     else
         setFocus();
 }
