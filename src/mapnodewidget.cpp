@@ -104,6 +104,11 @@ MapNodeWidget::MapNodeWidget(MindMapRa::MapNode* node, QWidget* parent)
     OnTextChanged();
 }
 
+MapNodeWidget::~MapNodeWidget()
+{
+    delete m_label;
+}
+
 void MapNodeWidget::SetText(const QString &text)
 {
     m_label->document()->setPlainText(text);

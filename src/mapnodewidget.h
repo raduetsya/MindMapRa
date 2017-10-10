@@ -19,6 +19,7 @@ class MapNodeWidget : public QFrame
 
 public:
     explicit MapNodeWidget(MindMapRa::MapNode* node, QWidget* parent = NULL);
+    ~MapNodeWidget();
 
     void SetText(const QString& text);
     void SetFolded(bool isFolded);
